@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document | Data Inventory & Flow Map</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="row-table-styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="identity-bar">
+      <div class="identity-left">
+        <span class="back-link" onclick="window.location.href='workspace.html'">← Workspace</span>
+        <span class="divider">|</span>
+        <span class="engagement-name" id="engagementName">Loading...</span>
+      </div>
+      <div class="identity-right">
+        <span class="doc-type">Data Inventory & Flow Map</span>
+      </div>
+    </header>
+
+    <main class="document-sheet">
+      <header class="doc-header">
+        <h1>Data Inventory & Flow Map</h1>
+        <p class="doc-description">Track consumer health data categories, systems, vendors, and transfer flows.</p>
+      </header>
+
+      <section class="doc-section">
+        <h2>Data Collection Profile</h2>
+        <div class="form-grid">
+          <label class="form-label">Primary Data Controller
+            <input class="form-input" id="dataController" placeholder="Legal entity responsible for processing" />
+          </label>
+          <label class="form-label">Data Protection Contact
+            <input class="form-input" id="privacyContact" placeholder="Name / role / email" />
+          </label>
+          <label class="form-label">Data Residency
+            <select class="form-input" id="dataResidency">
+              <option value="">-- Select --</option>
+              <option value="us-only">US only</option>
+              <option value="multi-region">Multi-region</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Data Categories Inventory</h2>
+            <p class="section-help">Each row = one data element category collected or inferred.</p>
+          </div>
+          <button class="btn-primary" onclick="categoryTable.addRow()">+ Add Category</button>
+        </header>
+        <div id="categoryTableContainer"></div>
+      </section>
+
+      <section class="doc-section">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Systems / Vendors</h2>
+            <p class="section-help">Map where data is stored, processed, and shared.</p>
+          </div>
+          <button class="btn-primary" onclick="vendorTable.addRow()">+ Add System/Vendor</button>
+        </header>
+        <div id="vendorTableContainer"></div>
+      </section>
+
+      <section class="doc-section">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Data Flows</h2>
+            <p class="section-help">Source to destination transfer mapping for compliance and incident response.</p>
+          </div>
+          <button class="btn-primary" onclick="flowTable.addRow()">+ Add Flow</button>
+        </header>
+        <div id="flowTableContainer"></div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Quick Risk Signals</h2>
+        <div class="stats-grid">
+          <div class="stat-card"><span class="stat-value" id="categoryCount">0</span><span class="stat-label">Data Categories</span></div>
+          <div class="stat-card"><span class="stat-value" id="vendorCount">0</span><span class="stat-label">Systems/Vendors</span></div>
+          <div class="stat-card"><span class="stat-value" id="crossBorderCount">0</span><span class="stat-label">Cross-Border Flows</span></div>
+          <div class="stat-card"><span class="stat-value" id="highRiskCount">0</span><span class="stat-label">High-Risk Flows</span></div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Notes</h2>
+        <textarea class="form-textarea" id="notes" rows="4" placeholder="Retention exceptions, subprocessors, legal concerns, unresolved mapping items..."></textarea>
+      </section>
+
+      <footer class="doc-footer">
+        <div class="save-status">
+          <span id="saveStatus">Saved</span>
+          <span class="last-saved" id="lastSaved"></span>
+        </div>
+        <div class="doc-actions">
+          <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+          <button class="btn-primary" onclick="saveDocument()">Save Document</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script src="data-model.js"></script>
+  <script src="row-table-engine.js"></script>
+  <script>
+    const DOC_TYPE = 'data-inventory';
+    let engagementId = null;
+    let documentId = null;
+    let autoSaveTimer = null;
+    let categoryTable = null;
+    let vendorTable = null;
+    let flowTable = null;
+
+    const categoryColumns = [
+      { key: 'category', header: 'Data Category', type: 'text', width: '200px', required: true, placeholder: 'e.g., Symptoms, Medication' },
+      { key: 'sensitivity', header: 'Sensitivity', type: 'select', width: '120px', options: [
+        { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }
+      ]},
+      { key: 'source', header: 'Collection Source', type: 'text', width: '180px', placeholder: 'User form, import, wearable' },
+      { key: 'purpose', header: 'Purpose', type: 'text', width: '220px', placeholder: 'Care, analytics, billing' },
+      { key: 'retention_days', header: 'Retention (Days)', type: 'number', width: '120px', placeholder: '365' },
+      { key: 'consent_required', header: 'Consent', type: 'select', width: '100px', options: [
+        { value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }, { value: 'partial', label: 'Partial' }
+      ]}
+    ];
+
+    const vendorColumns = [
+      { key: 'name', header: 'System / Vendor', type: 'text', width: '220px', required: true, placeholder: 'AWS, Stripe, Internal DB' },
+      { key: 'function', header: 'Function', type: 'text', width: '180px', placeholder: 'Hosting, Auth, Analytics' },
+      { key: 'data_categories', header: 'Data Categories', type: 'text', width: '220px', placeholder: 'symptoms, identifiers' },
+      { key: 'location', header: 'Data Location', type: 'text', width: '140px', placeholder: 'US-EAST-1' },
+      { key: 'baa_dpa', header: 'BAA/DPA', type: 'select', width: '120px', options: [
+        { value: 'executed', label: 'Executed' }, { value: 'pending', label: 'Pending' }, { value: 'none', label: 'None' }
+      ]},
+      { key: 'criticality', header: 'Criticality', type: 'select', width: '100px', options: [
+        { value: 'critical', label: 'Critical' }, { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }
+      ]}
+    ];
+
+    const flowColumns = [
+      { key: 'source_system', header: 'Source', type: 'text', width: '170px', required: true, placeholder: 'Web App' },
+      { key: 'destination_system', header: 'Destination', type: 'text', width: '170px', required: true, placeholder: 'Data Warehouse' },
+      { key: 'data_type', header: 'Data Type', type: 'text', width: '180px', placeholder: 'PHI, metadata' },
+      { key: 'transfer_method', header: 'Transfer Method', type: 'select', width: '130px', options: [
+        { value: 'api', label: 'API' }, { value: 'sftp', label: 'SFTP' }, { value: 'manual', label: 'Manual' }, { value: 'batch', label: 'Batch' }
+      ]},
+      { key: 'frequency', header: 'Frequency', type: 'select', width: '120px', options: [
+        { value: 'real-time', label: 'Real-time' }, { value: 'hourly', label: 'Hourly' }, { value: 'daily', label: 'Daily' }, { value: 'weekly', label: 'Weekly' }, { value: 'adhoc', label: 'Ad hoc' }
+      ]},
+      { key: 'encryption', header: 'Encryption', type: 'select', width: '120px', options: [
+        { value: 'tls', label: 'TLS' }, { value: 'at-rest-only', label: 'At-rest only' }, { value: 'none', label: 'None' }, { value: 'unknown', label: 'Unknown' }
+      ]},
+      { key: 'cross_border', header: 'Cross-Border', type: 'select', width: '120px', options: [
+        { value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }
+      ]},
+      { key: 'risk', header: 'Risk', type: 'select', width: '100px', options: [
+        { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }
+      ]}
+    ];
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      engagementId = params.get('engagement');
+      if (!engagementId) return window.location.href = 'engagement.html';
+
+      const engagement = await HealthDataDB.getEngagement(engagementId);
+      if (engagement) document.getElementById('engagementName').textContent = engagement.engagementName;
+
+      categoryTable = new RowTableEngine('categoryTableContainer', categoryColumns, { onChange: handleChange });
+      vendorTable = new RowTableEngine('vendorTableContainer', vendorColumns, { onChange: handleChange });
+      flowTable = new RowTableEngine('flowTableContainer', flowColumns, { onChange: handleChange });
+
+      await loadOrCreate();
+      bindInputs();
+      updateStats();
+    }
+
+    async function loadOrCreate() {
+      const docs = await HealthDataDB.getDocuments(engagementId, DOC_TYPE);
+      if (!docs.length) return;
+
+      documentId = docs[0].id;
+      const data = docs[0].data || {};
+      if (data.profile) {
+        document.getElementById('dataController').value = data.profile.dataController || '';
+        document.getElementById('privacyContact').value = data.profile.privacyContact || '';
+        document.getElementById('dataResidency').value = data.profile.dataResidency || '';
+      }
+      (data.categories || []).forEach(r => categoryTable.addRow(r));
+      (data.vendors || []).forEach(r => vendorTable.addRow(r));
+      (data.flows || []).forEach(r => flowTable.addRow(r));
+      if (data.notes) document.getElementById('notes').value = data.notes;
+      if (data.lastSaved) document.getElementById('lastSaved').textContent = new Date(data.lastSaved).toLocaleString();
+    }
+
+    function bindInputs() {
+      ['dataController', 'privacyContact', 'dataResidency', 'notes'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', scheduleSave);
+        el.addEventListener('change', scheduleSave);
+      });
+    }
+
+    function handleChange() {
+      updateStats();
+      scheduleSave();
+    }
+
+    function updateStats() {
+      const categories = categoryTable.getData();
+      const vendors = vendorTable.getData();
+      const flows = flowTable.getData();
+      document.getElementById('categoryCount').textContent = categories.length;
+      document.getElementById('vendorCount').textContent = vendors.length;
+      document.getElementById('crossBorderCount').textContent = flows.filter(f => f.cross_border === 'yes').length;
+      document.getElementById('highRiskCount').textContent = flows.filter(f => f.risk === 'high').length;
+    }
+
+    function scheduleSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDocumentState, 1200);
+    }
+
+    async function saveDocumentState() {
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      const data = {
+        profile: {
+          dataController: document.getElementById('dataController').value,
+          privacyContact: document.getElementById('privacyContact').value,
+          dataResidency: document.getElementById('dataResidency').value
+        },
+        categories: categoryTable.getData(),
+        vendors: vendorTable.getData(),
+        flows: flowTable.getData(),
+        notes: document.getElementById('notes').value,
+        lastSaved: new Date().toISOString()
+      };
+
+      if (documentId) await HealthDataDB.updateDocument(documentId, data);
+      else documentId = await HealthDataDB.createDocument(engagementId, DOC_TYPE, 'Data Inventory & Flow Map', data);
+
+      document.getElementById('saveStatus').textContent = 'Saved';
+      document.getElementById('lastSaved').textContent = new Date().toLocaleString();
+    }
+
+    function saveDocument() {
+      saveDocumentState();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <style>
+    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .form-label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; color: #495057; }
+    .form-input { padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .stat-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; text-align: center; }
+    .stat-value { display: block; font-size: 1.6rem; font-weight: 700; color: #495057; }
+    .stat-label { font-size: 0.72rem; text-transform: uppercase; color: #6c757d; }
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</body>
+</html>

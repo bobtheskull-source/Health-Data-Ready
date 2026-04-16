@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document | HIPAA Attestation and Triage</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="row-table-styles.css">
+</head>
+<body>
+  <div class="page">
+    <!-- Persistent Identity Header -->
+    <header class="identity-bar">
+      <div class="identity-left">
+        <span class="back-link" onclick="window.location.href='workspace.html'">← Workspace</span>
+        <span class="divider">|</span>
+        <span class="engagement-name" id="engagementName">Loading...</span>
+      </div>
+      <div class="identity-right">
+        <span class="doc-type">HIPAA Attestation</span>
+      </div>
+    </header>
+
+    <main class="document-sheet">
+      <header class="doc-header">
+        <h1>HIPAA Attestation and Covered Entity Triage</h1>
+        <p class="doc-description">Determine HIPAA applicability, entity classification, and document compliance attestation.</p>
+      </header>
+
+      <!-- Entity Type Triage -->
+      <section class="doc-section" id="entityTriage">
+        <h2>Entity Classification Triage</h2>
+        <p class="section-help">Answer these questions to determine if HIPAA applies and what type of entity the organization is.</p>
+
+        <div class="triage-flow">
+          <div class="triage-question" data-question=" phi_handling">
+            <label class="question-label">
+              <span class="question-number">1</span>
+              Does the organization create, receive, maintain, or transmit Protected Health Information (PHI)?
+            </label>
+            <div class="question-help">
+              PHI is individually identifiable health information in any form (oral, electronic, paper) that relates to past, present, or future physical/mental health or condition, provision of health care, or payment for health care.
+            </div>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="phi_handling" value="yes" onchange="updateTriage()">
+                <span class="radio-label">Yes - We handle PHI</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="phi_handling" value="no" onchange="updateTriage()">
+                <span class="radio-label">No - We do not handle PHI</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="phi_handling" value="unsure" onchange="updateTriage()">
+                <span class="radio-label">Unsure - Needs analysis</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="triage-question" data-question="entity_function">
+            <label class="question-label">
+              <span class="question-number">2</span>
+              What is the organization's primary function with respect to health information?
+            </label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="entity_function" value="healthcare_provider" onchange="updateTriage()">
+                <span class="radio-label">Health Care Provider - Furnishes, bills, or is paid for health care</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="entity_function" value="health_plan" onchange="updateTriage()">
+                <span class="radio-label">Health Plan - Insurance, HMO, employer-sponsored health plan</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="entity_function" value="clearinghouse" onchange="updateTriage()">
+                <span class="radio-label">Health Care Clearinghouse - Processes health information for billing/claims</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="entity_function" value="business_associate" onchange="updateTriage()">
+                <span class="radio-label">Business Associate - Performs functions involving PHI for a covered entity</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="entity_function" value="neither" onchange="updateTriage()">
+                <span class="radio-label">Neither - We do not fit any of the above categories</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="triage-question" data-question="electronic_phi">
+            <label class="question-label">
+              <span class="question-number">3</span>
+              Do you transmit any health information electronically in connection with a HIPAA-covered transaction?
+            </label>
+            <div class="question-help">
+              Covered transactions include: claims, eligibility inquiries, referral authorizations, premium payments, coordination of benefits. If you only handle paper records, HIPAA Security Rule does not apply.
+            </div>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="electronic_phi" value="yes" onchange="updateTriage()">
+                <span class="radio-label">Yes - We transmit ePHI</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="electronic_phi" value="no" onchange="updateTriage()">
+                <span class="radio-label">No - Paper only</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="electronic_phi" value="planning" onchange="updateTriage()">
+                <span class="radio-label">Planning to implement electronic transmission</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Classification Result -->
+        <div class="classification-result" id="classificationResult">
+          <div class="result-badge pending">
+            <span class="result-icon">⏳</span>
+            <span class="result-text">Complete all triage questions to see classification</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Determination Panel -->
+      <section class="doc-section" id="determinationPanel" style="display: none;">
+        <h2>HIPAA Applicability Determination</h2>
+        
+        <div class="determination-card" id="determinationCard">
+          <div class="determination-status" id="determinationStatus">
+            <span class="status-badge pending">Assessment Pending</span>
+          </div>
+          <div class="determination-details" id="determinationDetails"></div>
+        </div>
+      </section>
+
+      <!-- Applicable Rules -->
+      <section class="doc-section" id="applicableRulesSection" style="display: none;">
+        <h2>Applicable HIPAA Rules</h2>
+        <div class="rules-grid" id="rulesGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+
+      <!-- Required Administrative Safeguards -->
+      <section class="doc-section" id="safeguardsSection" style="display: none;">
+        <h2>Administrative Safeguards Checklist (45 CFR 164.308)</h2>
+        <div class="checklist-container" id="adminSafeguards">
+          <!-- Checklist items -->
+        </div>
+      </section>
+
+      <!-- Required Physical Safeguards -->
+      <section class="doc-section" id="physicalSafeguardsSection" style="display: none;">
+        <h2>Physical Safeguards Checklist (45 CFR 164.310)</h2>
+        <div class="checklist-container" id="physicalSafeguards">
+          <!-- Checklist items -->
+        </div>
+      </section>
+
+      <!-- Required Technical Safeguards -->
+      <section class="doc-section" id="technicalSafeguardsSection" style="display: none;">
+        <h2>Technical Safeguards Checklist (45 CFR 164.312)</h2>
+        <div class="checklist-container" id="technicalSafeguards">
+          <!-- Checklist items -->
+        </div>
+      </section>
+
+      <!-- Business Associate Agreements -->
+      <section class="doc-section" id="baaSection" style="display: none;">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Business Associate Agreements</h2>
+            <p class="section-help">Document BAAs with vendors who handle PHI on your behalf.</p>
+          </div>
+          <div class="section-actions">
+            <button class="btn-primary" onclick="baaTable.addRow()">+ Add BAA</button>
+          </div>
+        </header>
+        <div id="baaTableContainer"></div>
+      </section>
+
+      <!-- Breach Notification -->
+      <section class="doc-section" id="breachSection" style="display: none;">
+        <h2>Breach Notification Requirements</h2>
+        <div class="breach-cards">
+          <div class="breach-card">
+            <h4>Individual Notification</h4>
+            <p>Notify affected individuals within 60 days of discovery.</p>
+            <label class="checkbox-label">
+              <input type="checkbox" class="breach-check" data-requirement="individual">
+              <span>Process documented</span>
+            </label>
+          </div>
+          <div class="breach-card">
+            <h4>HHS Secretary</h4>
+            <p>Report breaches affecting 500+ individuals to HHS immediately.</p>
+            <label class="checkbox-label">
+              <input type="checkbox" class="breach-check" data-requirement="hhs">
+              <span>Process documented</span>
+            </label>
+          </div>
+          <div class="breach-card">
+            <h4>Media Notification</h4>
+            <p>For breaches affecting 500+ individuals in a state/jurisdiction.</p>
+            <label class="checkbox-label">
+              <input type="checkbox" class="breach-check" data-requirement="media">
+              <span>Process documented</span>
+            </label>
+          </div>
+          <div class="breach-card">
+            <h4>Business Associate Breaches</h4>
+            <p>BAs must notify covered entity of breaches affecting PHI.</p>
+            <label class="checkbox-label">
+              <input type="checkbox" class="breach-check" data-requirement="ba">
+              <span>Contract provisions verified</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Attestation Statement -->
+      <section class="doc-section" id="attestationSection" style="display: none;">
+        <h2>Attestation Statement</h2>
+        <div class="attestation-card">
+          <p class="attestation-text">
+            Based on the documentation and review conducted for this engagement, I attest that the information provided accurately reflects the organization's HIPAA compliance posture as of the date below.
+          </p>
+          
+          <div class="attestation-fields">
+            <label class="form-label">
+              Attestor Name:
+              <input type="text" class="form-input" id="attestorName" placeholder="Full name of person attesting">
+            </label>
+            <label class="form-label">
+              Title:
+              <input type="text" class="form-input" id="attestorTitle" placeholder="Job title">
+            </label>
+            <label class="form-label">
+              Date of Attestation:
+              <input type="date" class="form-input" id="attestationDate">
+            </label>
+          </div>
+
+          <div class="attestation-options">
+            <h4>Attestation Type</h4>
+            <label class="checkbox-label">
+              <input type="checkbox" class="attest-check" data-type="reviewed">
+              <span>I have reviewed the HIPAA compliance documentation and believe it to be accurate</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" class="attest-check" data-type="implemented">
+              <span>Safeguards have been implemented as documented</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" class="attest-check" data-type="training">
+              <span>Required workforce training has been provided</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" class="attest-check" data-type="current">
+              <span>Risk assessment is current (within 12 months)</span>
+            </label>
+          </div>
+
+          <div class="attestation-signature" id="attestationSignature">
+            <p class="signature-line">_____________________________________</p>
+            <p class="signature-label">Signature (document on file)</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <section class="doc-section">
+        <h2>Assessment Notes</h2>
+        <textarea class="form-textarea" id="assessmentNotes" rows="4" placeholder="Document gaps identified, remediation plans, legal questions, or areas of uncertainty..."></textarea>
+      </section>
+
+      <!-- Document Footer -->
+      <footer class="doc-footer">
+        <div class="save-status">
+          <span id="saveStatus">Saved</span>
+          <span class="last-saved" id="lastSaved"></span>
+        </div>
+        <div class="doc-actions">
+          <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+          <button class="btn-primary" onclick="saveDocument()">Save Document</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data-model.js"></script>
+  <script src="row-table-engine.js"></script>
+  <script>
+    // Document state
+    const DOC_TYPE = 'hipaa-attestation';
+    let engagementId = null;
+    let documentId = null;
+    let baaTable = null;
+    let autoSaveTimer = null;
+
+    // HIPAA Safeguards checklists
+    const ADMIN_SAFEGUARDS = [
+      { id: 'sec_mgmt', title: 'Security Management Process', description: 'Risk analysis and risk management procedures implemented', standard: true },
+      { id: 'assigned_security', title: 'Assigned Security Responsibility', description: 'Security officer assigned and documented', required: true },
+      { id: 'workforce_security', title: 'Workforce Security', description: 'Procedures for authorization and supervision of workforce', standard: true },
+      { id: 'training', title: 'Security Awareness and Training', description: 'Security training provided to all workforce members', standard: true },
+      { id: 'security_incidents', title: 'Security Incident Procedures', description: 'Procedures to address security incidents', required: true },
+      { id: 'contingency_plan', title: 'Contingency Plan', description: 'Data backup, disaster recovery, emergency mode operations', required: true },
+      { id: 'evaluation', title: 'Evaluation', description: 'Periodic technical and nontechnical evaluation', standard: true },
+      { id: 'business_associate', title: 'Business Associate Contracts', description: 'Written contracts with BAs requiring PHI protection', required: true }
+    ];
+
+    const PHYSICAL_SAFEGUARDS = [
+      { id: 'facility_access', title: 'Facility Access Controls', description: 'Physical access to facilities limited to authorized persons', required: true },
+      { id: 'workstation_security', title: 'Workstation Security', description: 'Physical safeguards for all workstations accessing ePHI', standard: true },
+      { id: 'device_control', title: 'Device and Media Controls', description: 'Procedures for hardware/electronic media receipt/removal', standard: true }
+    ];
+
+    const TECHNICAL_SAFEGUARDS = [
+      { id: 'access_control', title: 'Access Control', description: 'Unique user IDs, emergency access, automatic logoff, encryption/decryption', required: true },
+      { id: 'audit_controls', title: 'Audit Controls', description: 'Hardware/software to record/examine access to ePHI', required: true },
+      { id: 'integrity', title: 'Integrity Controls', description: 'Mechanisms to authenticate ePHI and protect from improper alteration/destruction', required: true },
+      { id: 'transmission', title: 'Transmission Security', description: 'Integrity controls and encryption when transmitting ePHI', standard: true }
+    ];
+
+    // BAA table config
+    const baaColumns = [
+      {
+        key: 'vendor_name',
+        header: 'Vendor/Business Associate',
+        type: 'text',
+        width: 'flex',
+        placeholder: 'e.g., AWS, Microsoft, Billing Service Inc.',
+        required: true
+      },
+      {
+        key: 'services',
+        header: 'Services Provided',
+        type: 'text',
+        width: '200px',
+        placeholder: 'e.g., Cloud hosting, Billing'
+      },
+      {
+        key: 'baa_status',
+        header: 'BAA Status',
+        type: 'select',
+        width: '130px',
+        options: [
+          { value: 'executed', label: '✓ Executed' },
+          { value: 'pending', label: '⏳ Pending' },
+          { value: 'not_required', label: 'N/A' },
+          { value: 'needs_review', label: 'Needs Review' }
+        ]
+      },
+      {
+        key: 'baa_date',
+        header: 'BAA Date',
+        type: 'date',
+        width: '120px'
+      },
+      {
+        key: 'phi_access',
+        header: 'PHI Access',
+        type: 'select',
+        width: '110px',
+        options: [
+          { value: 'full', label: 'Full' },
+          { value: 'limited', label: 'Limited' },
+          { value: 'none', label: 'None' },
+          { value: 'encrypted', label: 'Encrypted only' }
+        ]
+      },
+      {
+        key: 'notes',
+        header: 'Notes',
+        type: 'text',
+        width: '200px',
+        placeholder: 'Contract location, expiration, concerns...'
+      }
+    ];
+
+    // Initialize
+    async function init() {
+      await loadEngagement();
+      
+      baaTable = new RowTableEngine('baaTableContainer', baaColumns, {
+        onChange: scheduleAutoSave
+      });
+      
+      await loadOrCreateDocument();
+      renderSafeguardsChecklists();
+      startAutoSave();
+    }
+
+    async function loadEngagement() {
+      const params = new URLSearchParams(window.location.search);
+      engagementId = params.get('engagement');
+      
+      if (!engagementId) {
+        window.location.href = 'engagement.html';
+        return;
+      }
+
+      const engagement = await HealthDataDB.getEngagement(engagementId);
+      if (engagement) {
+        document.getElementById('engagementName').textContent = engagement.engagementName;
+      }
+    }
+
+    async function loadOrCreateDocument() {
+      const docs = await HealthDataDB.getDocuments(engagementId, DOC_TYPE);
+      
+      if (docs.length > 0) {
+        documentId = docs[0].id;
+        const data = docs[0].data || {};
+        
+        // Restore triage
+        if (data.triage) {
+          Object.entries(data.triage).forEach(([key, value]) => {
+            const input = document.querySelector(`[name="${key}"][value="${value}"]`);
+            if (input) input.checked = true;
+          });
+          updateTriage(false);
+        }
+        
+        // Restore BAA table
+        if (data.baas) {
+          data.baas.forEach(baa => baaTable.addRow(baa));
+        }
+        
+        // Restore attestations
+        if (data.breachChecks) {
+          data.breachChecks.forEach(req => {
+            const cb = document.querySelector(`.breach-check[data-requirement="${req}"]`);
+            if (cb) cb.checked = true;
+          });
+        }
+        
+        if (data.attestChecks) {
+          data.attestChecks.forEach(type => {
+            const cb = document.querySelector(`.attest-check[data-type="${type}"]`);
+            if (cb) cb.checked = true;
+          });
+        }
+        
+        if (data.attestorName) document.getElementById('attestorName').value = data.attestorName;
+        if (data.attestorTitle) document.getElementById('attestorTitle').value = data.attestorTitle;
+        if (data.attestationDate) document.getElementById('attestationDate').value = data.attestationDate;
+        if (data.assessmentNotes) document.getElementById('assessmentNotes').value = data.assessmentNotes;
+        
+        // Restore safeguard checks
+        if (data.safeguards) {
+          Object.entries(data.safeguards).forEach(([id, checked]) => {
+            const cb = document.querySelector(`[data-safeguard="${id}"]`);
+            if (cb) cb.checked = checked;
+          });
+        }
+        
+        if (data.lastSaved) {
+          document.getElementById('lastSaved').textContent = new Date(data.lastSaved).toLocaleString();
+        }
+      }
+    }
+
+    function updateTriage(save = true) {
+      const triage = {
+        phi_handling: document.querySelector('input[name="phi_handling"]:checked')?.value,
+        entity_function: document.querySelector('input[name="entity_function"]:checked')?.value,
+        electronic_phi: document.querySelector('input[name="electronic_phi"]:checked')?.value
+      };
+
+      const answeredCount = Object.values(triage).filter(v => v && v !== '').length;
+      const totalQuestions = 3;
+
+      if (answeredCount < totalQuestions) {
+        document.getElementById('classificationResult').innerHTML = `
+          <div class="result-badge pending">
+            <span class="result-icon">⏳</span>
+            <span class="result-text">${answeredCount}/${totalQuestions} questions answered</span>
+          </div>
+        `;
+        document.getElementById('determinationPanel').style.display = 'none';
+        document.getElementById('applicableRulesSection').style.display = 'none';
+        return;
+      }
+
+      generateDetermination(triage);
+
+      if (save) {
+        saveDocumentState();
+      }
+    }
+
+    function generateDetermination(triage) {
+      const resultEl = document.getElementById('classificationResult');
+      const panelEl = document.getElementById('determinationPanel');
+      const cardEl = document.getElementById('determinationCard');
+      const statusEl = document.getElementById('determinationStatus');
+      const detailsEl = document.getElementById('determinationDetails');
+      const rulesEl = document.getElementById('applicableRulesSection');
+
+      panelEl.style.display = 'block';
+
+      if (triage.phi_handling === 'no') {
+        // HIPAA does not apply
+        cardEl.className = 'determination-card not-applicable';
+        statusEl.innerHTML = '<span class="status-badge not-applicable">HIPAA Privacy Rule Does Not Apply</span>';
+        detailsEl.innerHTML = `
+          <p>This organization does not handle Protected Health Information (PHI). HIPAA applies only to covered entities and their business associates that create, receive, maintain, or transmit PHI.</p>
+          <p><strong>Note:</strong> If business operations change and the organization begins handling health information, reassess HIPAA applicability.</p>
+        `;
+        rulesEl.style.display = 'none';
+        hideSafeguardSections();
+        return;
+      }
+
+      if (triage.entity_function === 'neither') {
+        cardEl.className = 'determination-card not-applicable';
+        statusEl.innerHTML = '<span class="status-badge not-applicable">Not a Covered Entity</span>';
+        detailsEl.innerHTML = `
+          <p>This organization does not function as a health care provider, health plan, or health care clearinghouse. HIPAA applies only to covered entities and their business associates.</p>
+          <p>Monitor for changes: if the organization begins providing services to covered entities that involve PHI access, they may become a business associate requiring a BAA.</p>
+        `;
+        rulesEl.style.display = 'none';
+        hideSafeguardSections();
+        return;
+      }
+
+      // HIPAA applies
+      cardEl.className = 'determination-card applies';
+      
+      let entityType = '';
+      let functionText = '';
+      
+      switch(triage.entity_function) {
+        case 'healthcare_provider':
+          entityType = 'Health Care Provider';
+          functionText = 'furnishes, bills, or is paid for health care in the normal course of business';
+          break;
+        case 'health_plan':
+          entityType = 'Health Plan';
+          functionText = 'provides or pays for the cost of medical care';
+          break;
+        case 'clearinghouse':
+          entityType = 'Health Care Clearinghouse';
+          functionText = 'processes or facilitates the processing of health information';
+          break;
+        case 'business_associate':
+          entityType = 'Business Associate';
+          functionText = 'performs functions or activities involving PHI on behalf of, or provides services to, a covered entity';
+          break;
+      }
+
+      statusEl.innerHTML = `<span class="status-badge applies">${entityType}</span>`;
+      
+      detailsEl.innerHTML = `
+        <p>This organization is classified as a <strong>${entityType}</strong> under HIPAA. As such, it ${functionText}.</p>
+        ${triage.phi_handling === 'unsure' ? '<p class="alert alert-warning">⚠️ PHI handling is uncertain. Recommend legal consult to confirm applicability.</p>' : ''}
+        <p>${triage.electronic_phi === 'yes' 
+          ? 'Because electronic PHI (ePHI) is transmitted, all three HIPAA Rules apply: Privacy, Security, and Breach Notification.'
+          : triage.electronic_phi === 'no' 
+            ? 'Paper-only PHI means the Security Rule does not apply, but the Privacy Rule and Breach Notification Rule still apply.'
+            : 'Once ePHI transmission is implemented, the Security Rule will apply in addition to Privacy and Breach Notification Rules.'}</p>
+      `;
+
+      // Show applicable rules
+      rulesEl.style.display = 'block';
+      document.getElementById('rulesGrid').innerHTML = generateRulesGrid(triage);
+      
+      // Show relevant sections
+      showRelevantSections(triage);
+      
+      // Update result banner
+      resultEl.innerHTML = `
+        <div class="result-badge applies">
+          <span class="result-icon">✓</span>
+          <span class="result-text">${entityType} - HIPAA Applies</span>
+        </div>
+      `;
+    }
+
+    function generateRulesGrid(triage) {
+      const rules = [];
+      
+      // Privacy Rule always applies if entity is covered
+      rules.push({
+        name: 'Privacy Rule',
+        subtitle: 'Standards for Privacy of Individually Identifiable Health Information (45 CFR 160, 164 Subparts A & E)',
+        applies: true,
+        description: 'Protects PHI in all forms (oral, electronic, paper). Requires minimum necessary standard, patient rights, and privacy practices.'
+      });
+
+      // Security Rule applies if ePHI
+      const securityApplies = triage.electronic_phi === 'yes';
+      rules.push({
+        name: 'Security Rule',
+        subtitle: 'Security Standards for the Protection of Electronic PHI (45 CFR 160, 164 Subparts A & C)',
+        applies: securityApplies,
+        description: securityApplies 
+          ? 'Requires administrative, physical, and technical safeguards for ePHI.'
+          : 'Does not apply to paper-only operations. Implement when you transmit ePHI.'
+      });
+
+      // Breach Notification always applies if entity is covered
+      rules.push({
+        name: 'Breach Notification Rule',
+        subtitle: 'Notification in the Case of Breach of Unsecured PHI (45 CFR 164 Subpart D)',
+        applies: true,
+        description: 'Requires notification to affected individuals, HHS, and media for breaches of unsecured PHI.'
+      });
+
+      // Business Associate Rule
+      if (triage.entity_function === 'business_associate' || triage.electronic_phi === 'yes') {
+        rules.push({
+          name: 'BAA Requirements',
+          subtitle: 'Business Associate Agreements (45 CFR 164.504(e))',
+          applies: true,
+          description: 'Contracts required with any vendor/subcontractor that creates, receives, maintains, or transmits PHI on your behalf.'
+        });
+      }
+
+      return rules.map(rule => `
+        <div class="rule-card ${rule.applies ? 'applies' : 'not-applies'}">
+          <div class="rule-status">${rule.applies ? '✓ Applies' : '✗ Does Not Apply'}</div>
+          <h4>${rule.name}</h4>
+          <div class="rule-subtitle">${rule.subtitle}</div>
+          <p class="rule-description">${rule.description}</p>
+        </div>
+      `).join('');
+    }
+
+    function showRelevantSections(triage) {
+      // Show all sections for covered entities
+      const sections = ['safeguardsSection', 'physicalSafeguardsSection', 'technicalSafeguardsSection', 'baaSection', 'breachSection', 'attestationSection'];
+      
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'block';
+      });
+
+      // But only show technical safeguards if ePHI
+      if (triage.electronic_phi !== 'yes') {
+        document.getElementById('technicalSafeguardsSection').style.display = 'none';
+      }
+    }
+
+    function hideSafeguardSections() {
+      const sections = ['safeguardsSection', 'physicalSafeguardsSection', 'technicalSafeguardsSection', 'baaSection', 'breachSection', 'attestationSection'];
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+    }
+
+    function renderSafeguardsChecklists() {
+      const renderChecklist = (items, containerId) => {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        container.innerHTML = items.map(item => `
+          <label class="checklist-item safeguard-item">
+            <input type="checkbox" class="safeguard-check" data-safeguard="${item.id}">
+            <div class="safeguard-info">
+              <span class="safeguard-title">${item.title}</span>
+              <span class="safeguard-description">${item.description}</span>
+              ${item.required ? '<span class="badge-required">Required</span>' : '<span class="badge-addressable">Addressable</span>'}
+            </div>
+          </label>
+        `).join('');
+      };
+
+      renderChecklist(ADMIN_SAFEGUARDS, 'adminSafeguards');
+      renderChecklist(PHYSICAL_SAFEGUARDS, 'physicalSafeguards');
+      renderChecklist(TECHNICAL_SAFEGUARDS, 'technicalSafeguards');
+    }
+
+    async function saveDocumentState() {
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      
+      const triage = {
+        phi_handling: document.querySelector('input[name="phi_handling"]:checked')?.value,
+        entity_function: document.querySelector('input[name="entity_function"]:checked')?.value,
+        electronic_phi: document.querySelector('input[name="electronic_phi"]:checked')?.value
+      };
+
+      // Gather safeguard checks
+      const safeguards = {};
+      document.querySelectorAll('.safeguard-check').forEach(cb => {
+        safeguards[cb.dataset.safeguard] = cb.checked;
+      });
+
+      // Gather breach notification checks
+      const breachChecks = [];
+      document.querySelectorAll('.breach-check:checked').forEach(cb => {
+        breachChecks.push(cb.dataset.requirement);
+      });
+
+      // Gather attestation checks
+      const attestChecks = [];
+      document.querySelectorAll('.attest-check:checked').forEach(cb => {
+        attestChecks.push(cb.dataset.type);
+      });
+
+      const data = {
+        triage,
+        safeguards,
+        baas: baaTable.getData(),
+        breachChecks,
+        attestChecks,
+        attestorName: document.getElementById('attestorName').value,
+        attestorTitle: document.getElementById('attestorTitle').value,
+        attestationDate: document.getElementById('attestationDate').value,
+        assessmentNotes: document.getElementById('assessmentNotes').value,
+        lastSaved: new Date().toISOString()
+      };
+
+      if (documentId) {
+        await HealthDataDB.updateDocument(documentId, data);
+      } else {
+        documentId = await HealthDataDB.createDocument(engagementId, DOC_TYPE, 'HIPAA Attestation', data);
+      }
+
+      document.getElementById('saveStatus').textContent = 'Saved';
+      document.getElementById('lastSaved').textContent = new Date().toLocaleString();
+    }
+
+    function saveDocument() {
+      saveDocumentState().then(() => {
+        const btn = document.querySelector('.btn-primary');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Saved';
+        setTimeout(() => btn.textContent = originalText, 1500);
+      });
+    }
+
+    function scheduleAutoSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDocumentState, 1500);
+    }
+
+    function startAutoSave() {
+      document.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('change', scheduleAutoSave);
+      });
+      document.getElementById('assessmentNotes').addEventListener('input', scheduleAutoSave);
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <style>
+    /* Reuse triage styles from MHMD doc */
+    .triage-flow {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .triage-question {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .triage-question:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .question-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #212529;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #495057;
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .question-help {
+      margin-left: 2rem;
+      font-size: 0.875rem;
+      color: #6c757d;
+      margin-bottom: 0.75rem;
+    }
+
+    .radio-group {
+      margin-left: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .radio-option:hover {
+      background: #e9ecef;
+    }
+
+    .radio-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #495057;
+    }
+
+    .classification-result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .result-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .result-badge.pending {
+      background: #fff3cd;
+      color: #856404;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .result-badge.applies {
+      background: #d4edda;
+      color: #155724;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .result-icon {
+      font-size: 1.5rem;
+    }
+
+    /* Determination Card */
+    .determination-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid #6c757d;
+    }
+
+    .determination-card.applies {
+      background: #d4edda;
+      border-left-color: #28a745;
+    }
+
+    .determination-card.not-applicable {
+      background: #e2e3e5;
+      border-left-color: #6c757d;
+    }
+
+    .determination-status {
+      margin-bottom: 1rem;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-badge.applies {
+      background: #28a745;
+      color: white;
+    }
+
+    .status-badge.not-applicable {
+      background: #6c757d;
+      color: white;
+    }
+
+    .status-badge.pending {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .determination-details p {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+
+    .alert-warning {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      margin: 0.5rem 0;
+    }
+
+    /* Rules Grid */
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .rule-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.25rem;
+      border: 1px solid #dee2e6;
+    }
+
+    .rule-card.applies {
+      border-left: 4px solid #28a745;
+    }
+
+    .rule-card.not-applies {
+      border-left: 4px solid #6c757d;
+      opacity: 0.8;
+    }
+
+    .rule-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #6c757d;
+      margin-bottom: 0.5rem;
+    }
+
+    .rule-card.applies .rule-status {
+      color: #28a745;
+    }
+
+    .rule-card h4 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1rem;
+      color: #212529;
+    }
+
+    .rule-subtitle {
+      font-size: 0.75rem;
+      color: #6c757d;
+      margin-bottom: 0.75rem;
+    }
+
+    .rule-description {
+      font-size: 0.8125rem;
+      color: #495057;
+      margin: 0;
+    }
+
+    /* Safeguards Checklist */
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .safeguard-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .safeguard-item:hover {
+      background: #e9ecef;
+    }
+
+    .safeguard-check {
+      margin-top: 0.25rem;
+      width: 18px;
+      height: 18px;
+      accent-color: #28a745;
+      flex-shrink: 0;
+    }
+
+    .safeguard-info {
+      flex: 1;
+    }
+
+    .safeguard-title {
+      display: block;
+      font-weight: 600;
+      color: #212529;
+    }
+
+    .safeguard-description {
+      display: block;
+      font-size: 0.8125rem;
+      color: #6c757d;
+      margin-top: 0.25rem;
+    }
+
+    .badge-required,
+    .badge-addressable {
+      display: inline-block;
+      font-size: 0.625rem;
+      font-weight: 600;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+
+    .badge-required {
+      background: #dc3545;
+      color: white;
+    }
+
+    .badge-addressable {
+      background: #6c757d;
+      color: white;
+    }
+
+    /* Breach Cards */
+    .breach-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .breach-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+      border-left: 4px solid #dc3545;
+    }
+
+    .breach-card h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.875rem;
+      color: #212529;
+    }
+
+    .breach-card p {
+      font-size: 0.8125rem;
+      color: #6c757d;
+      margin-bottom: 0.75rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      cursor: pointer;
+    }
+
+    /* Attestation */
+    .attestation-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border: 1px solid #dee2e6;
+    }
+
+    .attestation-text {
+      font-style: italic;
+      color: #495057;
+      margin-bottom: 1.5rem;
+    }
+
+    .attestation-fields {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.8125rem;
+      color: #495057;
+    }
+
+    .form-input {
+      padding: 0.5rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+
+    .attestation-options {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .attestation-options h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 0.875rem;
+    }
+
+    .attestation-options .checkbox-label {
+      margin-bottom: 0.5rem;
+    }
+
+    .attestation-signature {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .signature-line {
+      margin: 0;
+      font-size: 1.25rem;
+      letter-spacing: 2px;
+    }
+
+    .signature-label {
+      margin: 0.5rem 0 0 0;
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+      .rules-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .breach-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .attestation-fields {
+        grid-template-columns: 1fr;
+      }
+
+      .radio-group {
+        margin-left: 0;
+      }
+
+      .question-help {
+        margin-left: 0;
+      }
+    }
+  </style>
+</body>
+</html>
