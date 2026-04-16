@@ -2,13 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a5f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Health Data Ready</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -19,26 +27,39 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
         }
         .container {
-            max-width: 600px;
+            width: 100%;
+            max-width: 500px;
             text-align: center;
             background: white;
-            padding: 3rem;
-            border-radius: 12px;
+            padding: 2rem;
+            border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #1e3a5f;
+            border-radius: 20px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #1e3a5f;
         }
         .tagline {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #666;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         .status {
             display: inline-block;
@@ -46,32 +67,169 @@
             color: #1976d2;
             padding: 0.5rem 1rem;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
         }
-        p {
+        .features {
+            text-align: left;
+            margin: 1.5rem 0;
+        }
+        .features h3 {
+            font-size: 0.9rem;
+            color: #1e3a5f;
+            margin-bottom: 0.75rem;
+        }
+        .features ul {
+            list-style: none;
+            font-size: 0.85rem;
             color: #555;
-            margin-bottom: 1.5rem;
+        }
+        .features li {
+            padding: 0.4rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .button {
+            display: inline-block;
+            background: #1e3a5f;
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+        .button:hover {
+            background: #2d5a87;
+        }
+        .button.secondary {
+            background: transparent;
+            color: #1e3a5f;
+            border: 2px solid #1e3a5f;
+        }
+        .button.secondary:hover {
+            background: #e3f2fd;
         }
         .disclaimer {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #888;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
             border-top: 1px solid #eee;
+        }
+        .offline-banner {
+            display: none;
+            background: #ff9800;
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .offline-banner.visible {
+            display: block;
+        }
+        @media (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="offline-banner" id="offlineBanner">You're offline. Some features may be unavailable.</div>
+        
+        <div class="logo">🏥</div>
         <h1>Health Data Ready</h1>
         <p class="tagline">Washington MHMDA Compliance Platform</p>
-        <span class="status">MVP in Development</span>
-        <p>Coming soon: A lightweight compliance platform for small medical-adjacent businesses navigating Washington State's My Health My Data Act.</p>
+        <span class="status">MVP Ready</span>
+        
+        <p>A lightweight compliance platform for small medical-adjacent businesses navigating Washington State's My Health My Data Act.</p>
+        
+        <div class="features">
+            <h3>Features</h3>
+            <ul>
+                <li>Applicability assessment</li>
+                <li>Data inventory management</li>
+                <li>Vendor tracking</li>
+                <li>Policy generation</li>
+                <li>Annual reviews</li>
+                <li>Remediation workflows</li>
+                <li>Evidence vault</li>
+            </ul>
+        </div>
+        
+        <button class="button" onclick="showComingSoon()">Use Web Version</button>
+        <button class="button secondary" onclick="installApp()">Install App</button>
+        
         <div class="disclaimer">
             <strong>Not Legal Advice:</strong> This platform produces operational outputs for review by qualified legal counsel.
         </div>
     </div>
+
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed'));
+        }
+
+        // Online/offline detection
+        function updateConnectionStatus() {
+            const banner = document.getElementById('offlineBanner');
+            if (!navigator.onLine) {
+                banner.classList.add('visible');
+            } else {
+                banner.classList.remove('visible');
+            }
+        }
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        updateConnectionStatus();
+
+        // PWA Install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        async function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            } else if (window.matchMedia('(display-mode: standalone)').matches) {
+                alert('App is already installed!');
+            } else {
+                alert('Install from browser menu → "Add to Home Screen"');
+            }
+        }
+
+        function showComingSoon() {
+            alert('Backend deployment required. API endpoints at /api/v1/');
+        }
+
+        // Prevent zoom on double-tap for better mobile UX
+        document.addEventListener('dblclick', function(event) {
+            event.preventDefault();
+        }, { passive: false });
+    </script>
 </body>
 </html>
