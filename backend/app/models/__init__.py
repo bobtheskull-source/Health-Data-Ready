@@ -40,6 +40,8 @@ class Organization(Base):
     
     users = relationship("WorkspaceUser", back_populates="organization", cascade="all, delete-orphan")
     audit_events = relationship("AuditEvent", back_populates="organization")
+    questionnaires = relationship("QuestionnaireResponse", back_populates="organization", cascade="all, delete-orphan")
+    vendors = relationship("SystemVendor", back_populates="organization", cascade="all, delete-orphan")
 
 class WorkspaceUser(Base):
     __tablename__ = "workspace_users"
