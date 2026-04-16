@@ -1,165 +1,170 @@
 """
-Rights Request Timeline Calculator
-MHMDA deadline calculations per RCW 19.373.040
+MHMDA Rights Request Timeline Engine
+RCW 19.373.040 - 45 day response requirement
 """
 
-from datetime import datetime, timedelta, timezone
-from typing import Optional, Tuple
+from datetime import datetime, timedelta
+from typing import Optional
 from enum import Enum
+import holidays
 
-class RequestType(str, Enum):
-    ACCESS = "access"
-    DELETION = "deletion"
-    WITHDRAW_CONSENT = "withdraw_consent"
-    APPEAL = "appeal"
 
-class TimelineCalculator:
-    """
-    Calculate deadlines for MHMDA rights requests.
+class TimelineStatus(str, Enum):
+    PENDING = "pending"
+    IN_PROGRESS = "in_progress"
+    EXTENDED = "extended"
+    DUE_SOON = "due_soon"  # < 7 days
+    OVERDUE = "overdue"
+    COMPLETED = "completed"
+
+
+class ExtensionReason(str, Enum):
+    VERIFICATION_REQUIRED = "verification_required"
+    HIGH_VOLUME = "high_volume"
+    TECHNICAL_DIFFICULTY = "technical_difficulty"
+    LEGAL_REVIEW = "legal_review"
+
+
+class RightsTimelineEngine:
+    """Calculate MHMDA-mandated response deadlines."""
     
-    Per RCW 19.373.040:
-    - Controller must respond within 45 days of receipt
-    - One 45-day extension allowed with notice to consumer
-    - Extension must include reason and new deadline
-    """
-    
-    BASE_RESPONSE_DAYS = 45
+    BASE_DAYS = 45
     EXTENSION_DAYS = 45
-    APPEAL_RESPONSE_DAYS = 45
+    WARNING_THRESHOLD_DAYS = 7
     
-    @classmethod
+    def __init__(self):
+        # Washington State holidays
+        self.wa_holidays = holidays.US(state='WA', years=range(2024, 2030))
+    
     def calculate_deadline(
-        cls,
-        received_at: datetime,
-        request_type: RequestType,
-        extension_used: bool = False
-    ) -> datetime:
-        """
-        Calculate the response deadline for a rights request.
-        
-        Args:
-            received_at: When the request was received
-            request_type: Type of rights request
-            extension_used: Whether extension has been invoked
-        
-        Returns:
-            The deadline datetime
-        """
-        # Ensure received_at is timezone-aware
-        if received_at.tzinfo is None:
-            received_at = received_at.replace(tzinfo=timezone.utc)
-        
-        # Calculate base deadline (45 days)
-        deadline = received_at + timedelta(days=cls.BASE_RESPONSE_DAYS)
-        
-        # If extension used, add another 45 days
-        if extension_used:
-            deadline = deadline + timedelta(days=cls.EXTENSION_DAYS)
-        
-        return deadline
-    
-    @classmethod
-    def can_use_extension(
-        cls,
-        received_at: datetime,
-        current_status: str
-    ) -> Tuple[bool, Optional[str]]:
-        """
-        Check if extension can still be requested.
-        
-        Extension must be requested before the original deadline.
-        
-        Returns:
-            (can_extend, reason_if_not)
-        """
-        now = datetime.now(timezone.utc)
-        original_deadline = received_at + timedelta(days=cls.BASE_RESPONSE_DAYS)
-        
-        if now > original_deadline:
-            return False, "Original deadline has passed"
-        
-        if current_status in ["fulfilled", "denied", "closed"]:
-            return False, "Request is already resolved"
-        
-        return True, None
-    
-    @classmethod
-    def get_timeline_summary(
-        cls,
-        received_at: datetime,
-        extension_used: bool,
-        extension_requested_at: Optional[datetime] = None
+        self, 
+        request_date: datetime,
+        extension_granted: bool = False,
+        extension_reason: Optional[ExtensionReason] = None,
+        extension_date: Optional[datetime] = None
     ) -> dict:
-        """Get a full timeline summary for a request."""
+        """
+        Calculate response deadline per RCW 19.373.040.
+        Returns full timeline details.
+        """
+        base_deadline = self._add_business_days(request_date, self.BASE_DAYS)
         
-        now = datetime.now(timezone.utc)
-        base_deadline = received_at + timedelta(days=cls.BASE_RESPONSE_DAYS)
-        
-        summary = {
-            "received_at": received_at.isoformat(),
-            "base_deadline": base_deadline.isoformat(),
-            "extension_used": extension_used,
-            "days_remaining": None,
-            "deadline_status": None
+        result = {
+            'request_date': request_date.isoformat(),
+            'base_deadline': base_deadline.isoformat(),
+            'days_remaining': self._business_days_between(datetime.now(), base_deadline),
+            'extension_granted': extension_granted,
+            'extension_reason': extension_reason.value if extension_reason else None,
+            'extended_deadline': None,
+            'total_days_allowed': self.BASE_DAYS,
+            'is_overdue': False,
+            'is_due_soon': False,
+            'timeline_status': TimelineStatus.PENDING.value
         }
         
-        if extension_used and extension_requested_at:
-            final_deadline = base_deadline + timedelta(days=cls.EXTENSION_DAYS)
-            summary["extension_requested_at"] = extension_requested_at.isoformat()
-            summary["final_deadline"] = final_deadline.isoformat()
-            
-            days_remaining = (final_deadline - now).days
-            summary["days_remaining"] = max(0, days_remaining)
-            
-            if now > final_deadline:
-                summary["deadline_status"] = "overdue"
-            elif days_remaining <= 7:
-                summary["deadline_status"] = "urgent"
-            elif days_remaining <= 14:
-                summary["deadline_status"] = "approaching"
-            else:
-                summary["deadline_status"] = "on_track"
+        if extension_granted and extension_date:
+            extended_deadline = self._add_business_days(extension_date, self.EXTENSION_DAYS)
+            result['extended_deadline'] = extended_deadline.isoformat()
+            result['total_days_allowed'] = self.BASE_DAYS + self.EXTENSION_DAYS
+            effective_deadline = extended_deadline
         else:
-            days_remaining = (base_deadline - now).days
-            summary["days_remaining"] = max(0, days_remaining)
-            summary["final_deadline"] = base_deadline.isoformat()
-            
-            if now > base_deadline:
-                summary["deadline_status"] = "overdue"
-            elif days_remaining <= 7:
-                summary["deadline_status"] = "approaching"
-            else:
-                summary["deadline_status"] = "on_track"
+            effective_deadline = base_deadline
         
-        return summary
+        # Status calculation
+        now = datetime.now()
+        days_to_deadline = self._business_days_between(now, effective_deadline)
+        
+        if days_to_deadline < 0:
+            result['is_overdue'] = True
+            result['timeline_status'] = TimelineStatus.OVERDUE.value
+            result['days_overdue'] = abs(days_to_deadline)
+        elif days_to_deadline <= self.WARNING_THRESHOLD_DAYS:
+            result['is_due_soon'] = True
+            result['timeline_status'] = TimelineStatus.DUE_SOON.value
+            result['days_remaining'] = days_to_deadline
+        else:
+            result['days_remaining'] = days_to_deadline
+            result['timeline_status'] = TimelineStatus.IN_PROGRESS.value
+        
+        return result
     
-    @classmethod
-    def calculate_appeal_deadline(
-        cls,
-        denial_date: datetime
-    ) -> datetime:
-        """
-        Calculate the appeal submission deadline.
+    def _add_business_days(self, start_date: datetime, days: int) -> datetime:
+        """Add business days excluding weekends and WA holidays."""
+        current = start_date
+        business_days_added = 0
         
-        Note: MHMDA doesn't specify appeal deadline, but reasonable
-        timeframes are typically 30-60 days. Using 45 days for consistency.
-        """
-        return denial_date + timedelta(days=cls.APPEAL_RESPONSE_DAYS)
+        while business_days_added < days:
+            current += timedelta(days=1)
+            if self._is_business_day(current):
+                business_days_added += 1
+        
+        return current
     
-    @classmethod
-    def is_duplicate_request(
-        cls,
-        existing_request_date: datetime,
-        new_request_date: datetime,
-        same_consumer: bool
-    ) -> bool:
-        """
-        Check if a new request might be a duplicate.
+    def _business_days_between(self, start: datetime, end: datetime) -> int:
+        """Count business days between dates (can be negative)."""
+        if start > end:
+            return -self._business_days_between(end, start)
         
-        Duplicate detection within 30 days for same consumer.
-        """
-        if not same_consumer:
-            return False
+        days = 0
+        current = start
+        while current.date() < end.date():
+            current += timedelta(days=1)
+            if self._is_business_day(current):
+                days += 1
         
-        time_diff = new_request_date - existing_request_date
-        return abs(time_diff.days) <= 30
+        return days
+    
+    def _is_business_day(self, date: datetime) -> bool:
+        """Check if date is a business day."""
+        return (
+            date.weekday() < 5  # Mon-Fri
+            and date.date() not in self.wa_holidays
+        )
+    
+    def validate_extension_request(
+        self, 
+        request_date: datetime,
+        proposed_reason: ExtensionReason,
+        current_day: int
+    ) -> dict:
+        """Validate if extension request meets MHMDA requirements."""
+        # Extensions must be requested before base deadline
+        base_deadline = self._add_business_days(request_date, self.BASE_DAYS)
+        can_extend = current_day <= self.BASE_DAYS
+        
+        valid_reasons = [
+            ExtensionReason.VERIFICATION_REQUIRED,
+            ExtensionReason.HIGH_VOLUME,
+            ExtensionReason.TECHNICAL_DIFFICULTY,
+            ExtensionReason.LEGAL_REVIEW
+        ]
+        
+        return {
+            'can_extend': can_extend,
+            'base_deadline_passed': current_day > self.BASE_DAYS,
+            'reason_valid': proposed_reason in valid_reasons,
+            'requires_consumer_notice': True,  # Must notify consumer of extension
+            'notice_must_include': [
+                'Reason for delay',
+                'New expected completion date',
+                'Consumer rights under MHMDA'
+            ]
+        }
+    
+    def get_milestones(self, request_date: datetime) -> list:
+        """Get key timeline milestones for a request."""
+        milestones = [
+            {'day': 0, 'event': 'Request received', 'deadline': request_date.isoformat()},
+            {'day': 7, 'event': 'Acknowledgment due', 'action': 'Send confirmation to consumer'},
+            {'day': 30, 'event': 'Progress check', 'action': 'Verify collection/processing status'},
+            {'day': 45, 'event': 'Final response due', 'deadline': self._add_business_days(request_date, 45).isoformat()},
+        ]
+        
+        extended_start = self._add_business_days(request_date, 45)
+        milestones.extend([
+            {'day': 52, 'event': 'Extension acknowledgment', 'action': 'Notify consumer of extension'},
+            {'day': 75, 'event': 'Extended progress check', 'action': 'Verify near completion'},
+            {'day': 90, 'event': 'Extended deadline', 'deadline': self._add_business_days(request_date, 90).isoformat(), 'note': 'Maximum allowed under MHMDA'},
+        ])
+        
+        return milestones
