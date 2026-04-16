@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data Ready - Dashboard</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0ea5e9">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 64px;
+            --header-height: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Layout Container */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+
+        .toggle-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar.collapsed .toggle-btn {
+            transform: rotate(180deg);
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .nav-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 8px;
+        }
+
+        .nav-group {
+            margin-bottom: 8px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-label {
+            display: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--primary);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .nav-text {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .nav-badge {
+            display: none;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Bottom Actions */
+        .sidebar-footer {
+            padding: 12px 8px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--primary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .header-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .notification-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+        }
+
+        /* User Menu */
+        .user-menu {
+            position: relative;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px 6px 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+        }
+
+        .user-trigger:hover {
+            background: var(--bg-hover);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .user-info {
+            text-align: left;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            min-width: 200px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s;
+            z-index: 200;
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 8px 0;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-icon.blue { background: rgba(14, 165, 233, 0.15); color: var(--primary); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .stat-icon.red { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-change {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: var(--danger); }
+
+        /* Section Cards */
+        .section-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .card-body {
+            padding: 16px 20px;
+        }
+
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-dark);
+            border-radius: 8px;
+            border-left: 3px solid var(--border);
+        }
+
+        .task-item.high { border-left-color: var(--danger); }
+        .task-item.medium { border-left-color: var(--warning); }
+        .task-item.low { border-left-color: var(--success); }
+
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .task-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 12px;
+        }
+
+        .task-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .task-badge.overdue {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .task-badge.due-soon {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        /* Activity Feed */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .activity-text strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Mobile Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar.collapsed + .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar-overlay.mobile-open {
+                display: block;
+            }
+
+            .mobile-menu-btn {
+                display: flex !important;
+            }
+
+            .section-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .quick-action-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .quick-action-btn span {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">H</div>
+                <span class="logo-text">Health Data Ready</span>
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="11 17 6 12 11 7"></polyline>
+                        <polyline points="18 17 13 12 18 7"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="nav-section">
+                <div class="nav-group">
+                    <div class="nav-label">Overview</div>
+                    <a href="#" class="nav-item active" data-page="dashboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="assessment">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                        </svg>
+                        <span class="nav-text">Assessment</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="inventory">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                        </svg>
+                        <span class="nav-text">Data Inventory</span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <div class="nav-label">Operations</div>
+                    <a href="#" class="nav-item" data-page="rights">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span class="nav-text">Rights Requests</span>
+                        <span class="nav-badge">3</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="remediation">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span class="nav-text">Remediation</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="vendors">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path>
+                        </svg>
+                        <span class="nav-text">Vendors</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="website">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path>
+                        </svg>
+                        <span class="nav-text">Website Review</span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <div class="nav-label">Reports & Export</div>
+                    <a href="#" class="nav-item" data-page="policies">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                        <span class="nav-text">Policies</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="exports">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span class="nav-text">Exports</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="evidence">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span class="nav-text">Evidence Vault</span>
+                    </a>
+                </div>
+
+                <div class="nav-group">
+                    <div class="nav-label">Admin</div>
+                    <a href="#" class="nav-item" data-page="organization">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"></path>
+                        </svg>
+                        <span class="nav-text">Organization</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                        </svg>
+                        <span class="nav-text">Settings</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item" onclick="handleLogout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span class="nav-text">Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" onclick="openMobileSidebar()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div>
+                        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                        <div class="breadcrumb">
+                            <a href="#">Home</a>
+                            <span>/</span>
+                            <span id="breadcrumbCurrent">Dashboard</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button class="header-btn" title="Search">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                    <button class="header-btn" title="Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 01-3.46 0"></path>
+                        </svg>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <button class="header-btn" title="Help">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </button>
+
+                    <div class="user-menu">
+                        <button class="user-trigger" onclick="toggleUserMenu()">
+                            <div class="user-avatar">JD</div>
+                            <div class="user-info">
+                                <div class="user-name">John Doe</div>
+                                <div class="user-role">Admin</div>
+                            </div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <div class="dropdown-header">
+                                <div class="user-name">John Doe</div>
+                                <div class="user-role">john@example.com</div>
+                            </div>
+                            <a href="#" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                Profile
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"></path>
+                                </svg>
+                                Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" onclick="handleLogout()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="#" class="quick-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"></path>
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path>
+                        </svg>
+                        <span>Run Assessment</span>
+                    </a>
+                    <a href="#" class="quick-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                        <span>New Rights Request</span>
+                    </a>
+                    <a href="#" class="quick-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path>
+                        </svg>
+                        <span>Add Vendor</span>
+                    </a>
+                    <a href="#" class="quick-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        <span>Initiate Review</span>
+                    </a>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Compliance Score</div>
+                                <div class="stat-value">87%</div>
+                                <div class="stat-change positive">↑ 5% from last review</div>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Open Rights Requests</div>
+                                <div class="stat-value">3</div>
+                                <div class="stat-change negative">2 due within 7 days</div>
+                            </div>
+                            <div class="stat-icon orange">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Remediation Tasks</div>
+                                <div class="stat-value">7</div>
+                                <div class="stat-change">3 high severity</div>
+                            </div>
+                            <div class="stat-icon red">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-label">Days Since Review</div>
+                                <div class="stat-value">12</div>
+                                <div class="stat-change positive">Next review in 353 days</div>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Sections -->
+                <div class="section-grid">
+                    <!-- Priority Tasks -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Priority Tasks</div>
+                                <div class="card-subtitle">Tasks requiring immediate attention</div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-sm btn-secondary">View All</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="task-list">
+                                <div class="task-item high">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Complete annual MHMDA assessment</div>
+                                        <div class="task-meta">
+                                            <span>Due Jan 15, 2026</span>
+                                            <span class="task-badge overdue">3 days overdue</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item high">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Respond to deletion request from Sarah M.</div>
+                                        <div class="task-meta">
+                                            <span>Due Jan 18, 2026</span>
+                                            <span class="task-badge due-soon">2 days left</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item medium">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Update vendor agreement with AnalyticsCo</div>
+                                        <div class="task-meta">
+                                            <span>Due Feb 1, 2026</span>
+                                            <span>Missing processor clause</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item low">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Review website tracker disclosure</div>
+                                        <div class="task-meta">
+                                            <span>No due date</span>
+                                            <span>Scheduled review</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Recent Activity</div>
+                                <div class="card-subtitle">Latest changes and events</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon blue">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-text"><strong>Privacy Policy</strong> was updated and published</div>
+                                        <div class="activity-time">2 hours ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon green">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <path d="M9 11l3 3L22 4"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-text"><strong>Access request</strong> from Michael T. was completed</div>
+                                        <div class="activity-time">5 hours ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon orange">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-text"><strong>Vendor Mailchimp</strong> was added to inventory</div>
+                                        <div class="activity-time">Yesterday</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon blue">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                                            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-text"><strong>Website scan</strong> completed - 2 trackers found</div>
+                                        <div class="activity-time">2 days ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="section-grid">
+                    <!-- Compliance Overview -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Compliance Overview</div>
+                                <div class="card-subtitle">Key requirement status</div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-sm btn-primary">Generate Report</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="task-list">
+                                <div class="task-item low">
+                                    <div class="task-checkbox" style="background: var(--success); border-color: var(--success);"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Privacy Policy Published</div>
+                                        <div class="task-meta">Last updated: Jan 10, 2026 · Compliant</div>
+                                    </div>
+                                </div>
+                                <div class="task-item low">
+                                    <div class="task-checkbox" style="background: var(--success); border-color: var(--success);"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Data Inventory Complete</div>
+                                        <div class="task-meta">42 data elements documented · Current</div>
+                                    </div>
+                                </div>
+                                <div class="task-item high">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Annual Assessment</div>
+                                        <div class="task-meta">3 days overdue · Action required</div>
+                                    </div>
+                                </div>
+                                <div class="task-item medium">
+                                    <div class="task-checkbox"></div>
+                                    <div class="task-content">
+                                        <div class="task-title">Cookie Consent Implementation</div>
+                                        <div class="task-meta">Missing granular opt-out · Remediation in progress</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Deadlines -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Upcoming Deadlines</div>
+                                <div class="card-subtitle">MHDMA-required timelines</div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="task-list">
+                                <div class="task-item high">
+                                    <div class="task-content">
+                                        <div class="task-title">Deletion Request - Sarah M.</div>
+                                        <div class="task-meta">
+                                            <span class="task-badge due-soon">Jan 18 (2 days)</span>
+                                            <span>Confirm deletion / provide estimate</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item high">
+                                    <div class="task-content">
+                                        <div class="task-title">Access Request - David K.</div>
+                                        <div class="task-meta">
+                                            <span class="task-badge overdue">Jan 16 (-1 day)</span>
+                                            <span>45-day window exceeded</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item medium">
+                                    <div class="task-content">
+                                        <div class="task-title">Vendor Audit - Stripe</div>
+                                        <div class="task-meta">
+                                            <span>Due Feb 1, 2026</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="task-item low">
+                                    <div class="task-content">
+                                        <div class="task-title">Annual Review Cycle</div>
+                                        <div class="task-meta">
+                                            <span>Due Jan 1, 2027</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', document.getElementById('sidebar').classList.contains('collapsed'));
+        }
+
+        // Mobile Sidebar
+        function openMobileSidebar() {
+            document.getElementById('sidebar').classList.add('mobile-open');
+            document.getElementById('sidebarOverlay').classList.add('mobile-open');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('sidebarOverlay').classList.remove('mobile-open');
+        }
+
+        // User Menu
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    if (page) {
+                        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+                        updatePageTitle(page);
+                        closeMobileSidebar();
+                    }
+                }
+            });
+        });
+
+        function updatePageTitle(page) {
+            const titles = {
+                dashboard: 'Dashboard',
+                assessment: 'Assessment',
+                inventory: 'Data Inventory',
+                rights: 'Rights Requests',
+                remediation: 'Remediation',
+                vendors: 'Vendors',
+                website: 'Website Review',
+                policies: 'Policies',
+                exports: 'Exports',
+                evidence: 'Evidence Vault',
+                organization: 'Organization',
+                settings: 'Settings'
+            };
+            document.getElementById('pageTitle').textContent = titles[page] || page;
+            document.getElementById('breadcrumbCurrent').textContent = titles[page] || page;
+        }
+
+        // Logout
+        function handleLogout() {
+            localStorage.removeItem('authToken');
+            window.location.href = 'auth.html';
+        }
+
+        // Check auth on load
+        (function() {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                // In demo mode, we'll create a mock token
+                localStorage.setItem('authToken', 'demo-token-123');
+            }
+
+            // Restore sidebar state
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.getElementById('sidebar').classList.add('collapsed');
+            }
+        })();
+    </script>
+</body>
+</html>
