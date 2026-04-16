@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a5f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Health Data Ready - Workspace</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #2d5a87;
+            --accent: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --text: #333;
+            --text-light: #666;
+            --bg: #f5f7fa;
+            --card: #fff;
+            --border: #e0e4e8;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Persistent Engagement Header */
+        .engagement-header {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .engagement-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .engagement-info h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .engagement-info p {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .engagement-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-header {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .btn-header:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .completion-badge {
+            background: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* App Layout */
+        .app-layout {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 90;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 85;
+            display: none;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                transform: translateX(0);
+                position: relative;
+            }
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-header h2 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-overview {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .progress-ring {
+            width: 40px;
+            height: 40px;
+            position: relative;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring-bg {
+            fill: none;
+            stroke: var(--border);
+            stroke-width: 3;
+        }
+
+        .progress-ring-fill {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 3;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .progress-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
+        }
+
+        /* Document List */
+        .doc-list {
+            padding: 0.5rem 0;
+        }
+
+        .doc-item {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1rem;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            gap: 0.75rem;
+        }
+
+        .doc-item:hover {
+            background: var(--bg);
+        }
+
+        .doc-item.active {
+            background: rgba(30, 58, 95, 0.05);
+            border-left-color: var(--primary);
+        }
+
+        .doc-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .doc-status.empty {
+            background: var(--border);
+        }
+
+        .doc-status.in-progress {
+            background: var(--warning);
+        }
+
+        .doc-status.complete {
+            background: var(--accent);
+        }
+
+        .doc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doc-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-meta {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            margin-left: 0;
+            padding: 1.5rem;
+            max-width: 900px;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+        }
+
+        /* Mobile Menu Button */
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .menu-btn {
+                display: none;
+            }
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+
+        .welcome-screen h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-screen p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Document Cards Grid */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .doc-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .doc-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .doc-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .doc-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .doc-card-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .doc-card-desc {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .doc-card-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-bar-fill.partial {
+            background: var(--warning);
+        }
+
+        .progress-percent {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            min-width: 35px;
+            text-align: right;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text);
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Persistent Engagement Header -->
+    <header class="engagement-header">
+        <div class="engagement-bar">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="menu-btn" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                    <span>Documents</span>
+                </button>
+                <div class="engagement-info">
+                    <h1 id="header-client-name">Loading...</h1>
+                    <p id="header-meta">Ref: <span id="header-ref">-</span> | Consultant: <span id="header-consultant">-</span></p>
+                </div>
+            </div>
+            <div class="engagement-actions">
+                <span class="completion-badge" id="overall-progress">0%</span>
+                <button class="btn-header" onclick="exportPackage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"></path>
+                    </svg>
+                    Export
+                </button>
+                <button class="btn-header" onclick="backToEngagements()">
+                    Exit
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar Document Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Annual Compliance Package</h2>
+            <div class="progress-overview">
+                <div class="progress-ring">
+                    <svg width="40" height="40" viewBox="0 0 40 40">
+                        <circle class="progress-ring-bg" cx="20" cy="20" r="16"></circle>
+                        <circle class="progress-ring-fill" id="sidebar-progress-ring" cx="20" cy="20" r="16" 
+                                stroke-dasharray="100.53" stroke-dashoffset="100.53"></circle>
+                    </svg>
+                </div>
+                <div>
+                    <div class="progress-text" id="sidebar-progress-text">0/10</div>
+                    <div class="progress-label">Documents</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="doc-list" id="docList">
+            <!-- Populated by JS -->
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div id="overview-view">
+            <div class="welcome-screen">
+                <h2>Annual Compliance Package</h2>
+                <p>Complete all documents to generate a comprehensive compliance report for your client. Use the sidebar to navigate between documents.</p>
+                
+                <div class="quick-actions">
+                    <button class="btn btn-primary" onclick="openFirstIncomplete()">
+                        Continue Working
+                    </button>
+                    <button class="btn btn-secondary" onclick="toggleSidebar()">
+                        View All Documents
+                    </button>
+                </div>
+            </div>
+
+            <div class="doc-grid" id="docGrid">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Document views will be loaded here -->
+        <div id="document-view" class="hidden">
+            <!-- Dynamic document content -->
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ===== DOCUMENT CONFIGURATION =====
+        const DOCUMENTS = [
+            { id: 'overview', name: 'Overview / Engagement Info', description: 'Client details and engagement scope', required: true },
+            { id: 'device-inventory', name: 'Device Inventory', description: 'Systems and devices processing health data', required: true },
+            { id: 'vulnerability', name: 'Vulnerability Assessment', description: 'Security weaknesses and risk findings', required: true },
+            { id: 'mhmd', name: 'MHMD Compliance', description: 'Washington My Health My Data Act checklist', required: true },
+            { id: 'remediation', name: 'Remediation Plan', description: 'Action items to address findings', required: true },
+            { id: 'hipaa', name: 'HIPAA Attestation', description: 'Covered entity determination and safeguards', required: true },
+            { id: 'data-inventory', name: 'Data Inventory & Flow Map', description: 'Health data collection and sharing flows', required: true },
+            { id: 'incident', name: 'Incident Response Log', description: 'Security incidents and breach tracking', required: false },
+            { id: 'staff', name: 'Staff Awareness', description: 'Training records and policy acknowledgments', required: true },
+            { id: 'annual-summary', name: 'Annual Compliance Summary', description: 'Executive summary and next steps', required: true }
+        ];
+
+        // ===== STATE =====
+        let currentEngagement = null;
+        let documentStates = {};
+        let currentDocId = null;
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEngagement();
+            renderDocumentList();
+            renderDocumentGrid();
+            updateProgressDisplay();
+        });
+
+        function loadEngagement() {
+            const stored = sessionStorage.getItem('currentEngagement');
+            if (!stored) {
+                window.location.href = 'engagement.html';
+                return;
+            }
+
+            currentEngagement = JSON.parse(stored);
+            
+            // Update header
+            document.getElementById('header-client-name').textContent = currentEngagement.clientName;
+            document.getElementById('header-ref').textContent = currentEngagement.referenceNumber;
+            document.getElementById('header-consultant').textContent = currentEngagement.consultantName;
+
+            // Load document states (mock for now)
+            loadDocumentStates();
+        }
+
+        function loadDocumentStates() {
+            // Mock data - will come from IndexedDB in production
+            documentStates = {
+                'overview': { status: 'complete', progress: 100 },
+                'device-inventory': { status: 'in-progress', progress: 60 },
+                'vulnerability': { status: 'empty', progress: 0 },
+                'mhmd': { status: 'empty', progress: 0 },
+                'remediation': { status: 'empty', progress: 0 },
+                'hipaa': { status: 'empty', progress: 0 },
+                'data-inventory': { status: 'empty', progress: 0 },
+                'incident': { status: 'empty', progress: 0 },
+                'staff': { status: 'empty', progress: 0 },
+                'annual-summary': { status: 'empty', progress: 0 }
+            };
+        }
+
+        // ===== RENDERING =====
+        function renderDocumentList() {
+            const list = document.getElementById('docList');
+            
+            list.innerHTML = DOCUMENTS.map(doc => {
+                const state = documentStates[doc.id] || { status: 'empty', progress: 0 };
+                const isActive = currentDocId === doc.id;
+                
+                return `
+                    <div class="doc-item ${isActive ? 'active' : ''}" onclick="navigateToDocument('${doc.id}')">
+                        <div class="doc-status ${state.status}"></div>
+                        <div class="doc-info">
+                            <div class="doc-name">${doc.name}</div>
+                            <div class="doc-meta">${state.progress}% complete</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderDocumentGrid() {
+            const grid = document.getElementById('docGrid');
+            
+            grid.innerHTML = DOCUMENTS.map(doc => {
+                const state = documentStates[doc.id] || { status: 'empty', progress: 0 };
+                const progressClass = state.progress > 0 && state.progress < 100 ? 'partial' : '';
+                
+                return `
+                    <div class="doc-card" onclick="navigateToDocument('${doc.id}')">
+                        <div class="doc-card-header">
+                            <div class="doc-card-title">${doc.name}</div>
+                            <div class="doc-card-status" style="background: ${getStatusColor(state.status)}"></div>
+                        </div>
+                        <div class="doc-card-desc">${doc.description}</div>
+                        <div class="doc-card-progress">
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill ${progressClass}" style="width: ${state.progress}%"></div>
+                            </div>
+                            <span class="progress-percent">${state.progress}%</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'complete': return '#4caf50';
+                case 'in-progress': return '#ff9800';
+                default: return '#e0e4e8';
+            }
+        }
+
+        function updateProgressDisplay() {
+            const completeCount = Object.values(documentStates).filter(s => s.status === 'complete').length;
+            const totalCount = DOCUMENTS.length;
+            const percent = Math.round((completeCount / totalCount) * 100);
+
+            // Update header badge
+            document.getElementById('overall-progress').textContent = percent + '%';
+
+            // Update sidebar ring
+            const circumference = 2 * Math.PI * 16;
+            const offset = circumference - (percent / 100) * circumference;
+            document.getElementById('sidebar-progress-ring').style.strokeDashoffset = offset;
+            document.getElementById('sidebar-progress-text').textContent = `${completeCount}/${totalCount}`;
+        }
+
+        // ===== NAVIGATION =====
+        function navigateToDocument(docId) {
+            if (docId === 'overview') {
+                showOverview();
+                return;
+            }
+
+            currentDocId = docId;
+            
+            // In Phase 1, show placeholder
+            // In full implementation, load document HTML
+            showToast(`Opening ${getDocName(docId)}... (Document stub)`);
+            
+            // Update sidebar active state
+            renderDocumentList();
+            
+            // Close mobile sidebar
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+        }
+
+        function showOverview() {
+            currentDocId = null;
+            document.getElementById('overview-view').classList.remove('hidden');
+            document.getElementById('document-view').classList.add('hidden');
+            renderDocumentList();
+        }
+
+        function getDocName(id) {
+            const doc = DOCUMENTS.find(d => d.id === id);
+            return doc ? doc.name : id;
+        }
+
+        function openFirstIncomplete() {
+            const incomplete = DOCUMENTS.find(doc => {
+                const state = documentStates[doc.id];
+                return state && state.status !== 'complete';
+            });
+            
+            if (incomplete) {
+                navigateToDocument(incomplete.id);
+            } else {
+                showToast('All documents complete! Ready to export.', 'success');
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('show');
+        }
+
+        // ===== ACTIONS =====
+        function exportPackage() {
+            showToast('Export package builder coming in HDR-RW-014', 'info');
+        }
+
+        function backToEngagements() {
+            // Clear current engagement from session
+            sessionStorage.removeItem('currentEngagement');
+            window.location.href = 'engagement.html';
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

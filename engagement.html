@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1e3a5f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Health Data Ready - Engagements</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-dark: #2d5a87;
+            --accent: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --text: #333;
+            --text-light: #666;
+            --bg: #f5f7fa;
+            --card: #fff;
+            --border: #e0e4e8;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .app-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .app-header .tagline {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-group label .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Engagement List */
+        .engagement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .engagement-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .engagement-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .engagement-info h3 {
+            font-size: 1rem;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .engagement-info p {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .engagement-meta {
+            text-align: right;
+        }
+
+        .engagement-date {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .engagement-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--accent);
+        }
+
+        .status-draft {
+            background: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Collapsible Sections */
+        .collapsible {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            background: var(--bg);
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .collapsible-body {
+            padding: 1rem;
+            display: none;
+        }
+
+        .collapsible-body.open {
+            display: block;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text);
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            background: var(--accent);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <h1>🏥 Health Data Ready</h1>
+        <div class="tagline">Annual Compliance Package System</div>
+    </header>
+
+    <div class="container">
+        <!-- Consultant Workspace -->
+        <div id="workspace-view">
+            <div class="section-header">
+                <h2>Engagements</h2>
+                <p>Manage your client compliance packages</p>
+            </div>
+
+            <!-- Create New Engagement Button -->
+            <button class="btn btn-primary btn-full mb-4" onclick="showCreateForm()">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Create New Engagement
+            </button>
+
+            <!-- Engagement List -->
+            <div id="engagement-list-container">
+                <div class="loading" id="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading engagements...</p>
+                </div>
+                
+                <div id="engagement-list" class="engagement-list hidden"></div>
+                
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-state-icon">📁</div>
+                    <h3>No Engagements Yet</h3>
+                    <p>Create your first compliance engagement to get started.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Engagement Form -->
+        <div id="create-form-view" class="hidden">
+            <div class="section-header">
+                <h2>New Engagement</h2>
+                <p>Enter client and engagement details</p>
+            </div>
+
+            <div class="card">
+                <form id="engagement-form" onsubmit="saveEngagement(event)">
+                    <div class="form-group">
+                        <label for="clientName">Client Name <span class="required">*</span></label>
+                        <input type="text" id="clientName" name="clientName" required 
+                               placeholder="e.g., Acme Physical Therapy"
+                               autocomplete="organization">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="consultantName">Consultant Name <span class="required">*</span></label>
+                        <input type="text" id="consultantName" name="consultantName" required
+                               placeholder="e.g., Jane Smith"
+                               autocomplete="name">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Engagement Date <span class="required">*</span></label>
+                            <input type="date" id="startDate" name="startDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="referenceNumber">Reference Number <span class="required">*</span></label>
+                            <input type="text" id="referenceNumber" name="referenceNumber" required
+                                   placeholder="e.g., HDR-2026-001">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes (Optional)</label>
+                        <input type="text" id="notes" name="notes"
+                               placeholder="Any additional context about this engagement...">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Create Engagement
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-full mt-2" onclick="showWorkspace()">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ===== DATABASE SETUP =====
+        const DB_NAME = 'HealthDataReady';
+        const DB_VERSION = 1;
+        let db;
+
+        // Initialize IndexedDB
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Engagements store
+                    if (!db.objectStoreNames.contains('engagements')) {
+                        const store = db.createObjectStore('engagements', { keyPath: 'id' });
+                        store.createIndex('clientName', 'clientName', { unique: false });
+                        store.createIndex('startDate', 'startDate', { unique: false });
+                        store.createIndex('status', 'status', { unique: false });
+                    }
+
+                    // Documents store (for future)
+                    if (!db.objectStoreNames.contains('documents')) {
+                        const docStore = db.createObjectStore('documents', { keyPath: 'id' });
+                        docStore.createIndex('engagementId', 'engagementId', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // ===== ENGAGEMENT CRUD =====
+        async function saveEngagement(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const engagement = {
+                id: 'eng_' + Date.now(),
+                clientName: form.clientName.value.trim(),
+                consultantName: form.consultantName.value.trim(),
+                startDate: form.startDate.value,
+                referenceNumber: form.referenceNumber.value.trim(),
+                notes: form.notes.value.trim(),
+                status: 'active',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                currentDocument: null,
+                completionPercent: 0
+            };
+
+            try {
+                const transaction = db.transaction(['engagements'], 'readwrite');
+                const store = transaction.objectStore('engagements');
+                await store.add(engagement);
+
+                showToast('Engagement created successfully', 'success');
+                
+                // Store current engagement in session
+                sessionStorage.setItem('currentEngagement', JSON.stringify(engagement));
+                
+                // Redirect to document workspace
+                setTimeout(() => {
+                    window.location.href = 'workspace.html';
+                }, 500);
+            } catch (error) {
+                console.error('Error saving engagement:', error);
+                showToast('Error creating engagement', 'error');
+            }
+        }
+
+        async function loadEngagements() {
+            try {
+                const transaction = db.transaction(['engagements'], 'readonly');
+                const store = transaction.objectStore('engagements');
+                const request = store.getAll();
+
+                request.onsuccess = () => {
+                    const engagements = request.result;
+                    renderEngagementList(engagements);
+                };
+            } catch (error) {
+                console.error('Error loading engagements:', error);
+                showToast('Error loading engagements', 'error');
+            }
+        }
+
+        function renderEngagementList(engagements) {
+            const container = document.getElementById('engagement-list');
+            const emptyState = document.getElementById('empty-state');
+            const loading = document.getElementById('loading-state');
+
+            loading.classList.add('hidden');
+
+            if (engagements.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            // Sort by date, newest first
+            engagements.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            container.innerHTML = engagements.map(eng => `
+                <div class="engagement-item" onclick="resumeEngagement('${eng.id}')">
+                    <div class="engagement-info">
+                        <h3>${escapeHtml(eng.clientName)}</h3>
+                        <p>Ref: ${escapeHtml(eng.referenceNumber)} | Consultant: ${escapeHtml(eng.consultantName)}</p>
+                    </div>
+                    <div class="engagement-meta">
+                        <div class="engagement-date">${formatDate(eng.startDate)}</div>
+                        <span class="engagement-status status-${eng.status}">${eng.status}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+        }
+
+        function resumeEngagement(id) {
+            const transaction = db.transaction(['engagements'], 'readonly');
+            const store = transaction.objectStore('engagements');
+            const request = store.get(id);
+
+            request.onsuccess = () => {
+                const engagement = request.result;
+                if (engagement) {
+                    sessionStorage.setItem('currentEngagement', JSON.stringify(engagement));
+                    window.location.href = 'workspace.html';
+                }
+            };
+        }
+
+        // ===== UI HELPERS =====
+        function showCreateForm() {
+            document.getElementById('workspace-view').classList.add('hidden');
+            document.getElementById('create-form-view').classList.remove('hidden');
+            
+            // Set default date to today
+            document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+            
+            // Generate reference number
+            const year = new Date().getFullYear();
+            const random = Math.floor(Math.random() * 900) + 100;
+            document.getElementById('referenceNumber').value = `HDR-${year}-${random}`;
+        }
+
+        function showWorkspace() {
+            document.getElementById('create-form-view').classList.add('hidden');
+            document.getElementById('workspace-view').classList.remove('hidden');
+            document.getElementById('engagement-form').reset();
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        // ===== INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initDB();
+                await loadEngagements();
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showToast('Error initializing app', 'error');
+            }
+        });
+
+        // Check for existing session
+        const existingEngagement = sessionStorage.getItem('currentEngagement');
+        if (existingEngagement && window.location.pathname.includes('engagement.html')) {
+            // Optional: ask to resume or start new
+            console.log('Existing engagement found:', JSON.parse(existingEngagement));
+        }
+    </script>
+</body>
+</html>
