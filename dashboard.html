@@ -741,6 +741,462 @@
         .empty-state p {
             font-size: 14px;
         }
+
+        /* ===== ASSESSMENT PAGE STYLES ===== */
+        .page-content {
+            display: none;
+            padding: 24px;
+        }
+
+        .assessment-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .assessment-progress {
+            margin-bottom: 32px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .progress-number {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            transition: width 0.3s ease;
+        }
+
+        .question-card {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .question-number {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .question-text {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .question-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .option-card input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        .rcw-reference {
+            margin-top: 16px;
+            padding: 12px;
+            background: rgba(14, 165, 233, 0.1);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--success);
+        }
+
+        .assessment-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .assessment-results {
+            text-align: center;
+            padding: 48px 24px;
+        }
+
+        .results-header {
+            margin-bottom: 32px;
+        }
+
+        .applicability-badge {
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+
+        .applicability-badge.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .applicability-badge.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .results-summary {
+            text-align: left;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .result-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== INVENTORY PAGE STYLES ===== */
+        .stats-grid.four-col {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .stat-card.mini {
+            padding: 20px;
+        }
+
+        .stat-card.mini .stat-value {
+            font-size: 32px;
+        }
+
+        .stat-value.warning {
+            color: var(--warning);
+        }
+
+        .stat-value.small {
+            font-size: 18px;
+        }
+
+        .mt-4 {
+            margin-top: 24px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 24px;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 24px 0;
+        }
+
+        .modal-header h3 {
+            font-size: 20px;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            padding: 16px 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
+        .checkbox-group input {
+            width: auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .search-input {
+            padding: 8px 16px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            width: 240px;
+        }
+
+        .inventory-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .inventory-item {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .inventory-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .inventory-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .inventory-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .inventory-notes {
+            margin-top: 8px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-primary {
+            background: rgba(14, 165, 233, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-info {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+        }
+
+        .data-flow-viz {
+            height: 200px;
+            background: var(--bg-dark);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -1299,52 +1755,528 @@
         </main>
     </div>
 
+            <!-- Assessment Page (Hidden by default) -->
+            <div id="assessment-page" class="page-content" style="display: none;">
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="startNewAssessment()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        <span>Start New Assessment</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="exportAssessment()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"></path>
+                        </svg>
+                        <span>Export Results</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="runApplicabilityCheck()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9 12l2 2 4-4"></path>
+                        </svg>
+                        <span>Quick Check</span>
+                    </button>
+                </div>
+
+                <div class="assessment-container">
+                    <div class="assessment-progress" id="assessment-progress">
+                        <div class="progress-header">
+                            <h3>MHMDA Applicability Assessment</h3>
+                            <span class="progress-number" id="progress-text">Step 1 of 8</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill" style="width: 12%"></div>
+                        </div>
+                    </div>
+
+                    <div class="assessment-form-container" id="assessment-form">
+                        <!-- Question 1 -->
+                        <div class="question-card active" data-step="1">
+                            <div class="question-header">
+                                <div class="question-number">1</div>
+                                <h4>Business Location</h4>
+                            </div>
+                            <p class="question-text">Does your organization conduct business in Washington State or target Washington consumers?</p>
+                            <div class="question-options">
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="yes">
+                                    <span class="option-text">Yes - We operate in or target Washington consumers</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="no">
+                                    <span class="option-text">No - We do not target Washington</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q1" value="unsure">
+                                    <span class="option-text">Unsure - Need to verify</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.010(2)(a) - Geographic scope</div>
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div class="question-card" data-step="2" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">2</div>
+                                <h4>Data Type</h4>
+                            </div>
+                            <p class="question-text">Do you collect, process, or share health data that could be linked to an individual?</p>
+                            <div class="question-options">
+                                <label class="option-card">
+                                    <input type="radio" name="q2" value="direct">
+                                    <span class="option-text">Health data directly (diagnoses, treatment, biometric data)</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q2" value="inferred">
+                                    <span class="option-text">Health data through inference (health-related apps, wellness tracking)</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q2" value="none">
+                                    <span class="option-text">No health data collected</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.010(2)(b) - Consumer health data definition</div>
+                        </div>
+
+                        <!-- Question 3 -->
+                        <div class="question-card" data-step="3" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">3</div>
+                                <h4>Data Collection Methods</h4>
+                            </div>
+                            <p class="question-text">How do you collect consumer health data? (Select all that apply)</p>
+                            <div class="question-options">
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q3" value="website">
+                                    <span class="option-text">Website forms or tracking</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q3" value="app">
+                                    <span class="option-text">Mobile applications</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q3" value="devices">
+                                    <span class="option-text">Wearables or health devices</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q3" value="third_party">
+                                    <span class="option-text">Third-party data brokers</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q3" value="other">
+                                    <span class="option-text">Other methods</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q3" value="none">
+                                    <span class="option-text">No collection occurs</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.030 - Collection limitations</div>
+                        </div>
+
+                        <!-- Question 4 -->
+                        <div class="question-card" data-step="4" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">4</div>
+                                <h4>Data Sharing</h4>
+                            </div>
+                            <p class="question-text">Do you share consumer health data with any third parties?</p>
+                            <div class="question-options">
+                                <label class="option-card">
+                                    <input type="radio" name="q4" value="affiliates">
+                                    <span class="option-text">Yes - with affiliates/partners</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q4" value="service_providers">
+                                    <span class="option-text">Only with service providers (processors)</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q4" value="no">
+                                    <span class="option-text">No sharing</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.040(1) - Disclosure requirements</div>
+                        </div>
+
+                        <!-- Question 5 -->
+                        <div class="question-card" data-step="5" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">5</div>
+                                <h4>Consent Mechanisms</h4>
+                            </div>
+                            <p class="question-text">Do you obtain explicit consent before collecting or sharing health data?</p>
+                            <div class="question-options">
+                                <label class="option-card">
+                                    <input type="radio" name="q5" value="explicit">
+                                    <span class="option-text">Yes - explicit opt-in consent required</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q5" value="implied">
+                                    <span class="option-text">Implied consent only</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q5" value="notice">
+                                    <span class="option-text">Notice only, no consent</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q5" value="none">
+                                    <span class="option-text">No consent mechanism</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.040(2) - Consent requirements</div>
+                        </div>
+
+                        <!-- Question 6 -->
+                        <div class="question-card" data-step="6" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">6</div>
+                                <h4>Consumer Rights Process</h4>
+                            </div>
+                            <p class="question-text">Do you have a process for handling consumer data rights requests?</p>
+                            <div class="question-options">
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q6" value="access">
+                                    <span class="option-text">Access requests (45 days)</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q6" value="deletion">
+                                    <span class="option-text">Deletion requests (45 days)</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q6" value="withdraw">
+                                    <span class="option-text">Consent withdrawal</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q6" value="appeal">
+                                    <span class="option-text">Appeal process for denials</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q6" value="none">
+                                    <span class="option-text">No process in place</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.040(3) - Consumer rights</div>
+                        </div>
+
+                        <!-- Question 7 -->
+                        <div class="question-card" data-step="7" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">7</div>
+                                <h4>Security Measures</h4>
+                            </div>
+                            <p class="question-text">What security measures protect consumer health data?</p>
+                            <div class="question-options">
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q7" value="encryption_rest">
+                                    <span class="option-text">Encryption at rest</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q7" value="encryption_transit">
+                                    <span class="option-text">Encryption in transit (TLS)</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q7" value="access_controls">
+                                    <span class="option-text">Access controls/role-based access</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q7" value="audit_logging">
+                                    <span class="option-text">Audit logging</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q7" value="training">
+                                    <span class="option-text">Employee training</span>
+                                </label>
+                                <label class="option-card checkbox-option">
+                                    <input type="checkbox" name="q7" value="none">
+                                    <span class="option-text">No formal measures</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.050 - Security obligations</div>
+                        </div>
+
+                        <!-- Question 8 -->
+                        <div class="question-card" data-step="8" style="display: none;">
+                            <div class="question-header">
+                                <div class="question-number">8</div>
+                                <h4>Geolocation Tracking</h4>
+                            </div>
+                            <p class="question-text">Do you collect precise geolocation data from consumers?</p>
+                            <div class="question-options">
+                                <label class="option-card">
+                                    <input type="radio" name="q8" value="precise">
+                                    <span class="option-text">Yes - precise location within 1750 feet</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q8" value="approximate">
+                                    <span class="option-text">Approximate location only</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q8" value="with_consent">
+                                    <span class="option-text">Only with explicit consent</span>
+                                </label>
+                                <label class="option-card">
+                                    <input type="radio" name="q8" value="none">
+                                    <span class="option-text">No location data collected</span>
+                                </label>
+                            </div>
+                            <div class="rcw-reference">RCW 19.373.010(2)(a)(ii) - Geolocation prohibition</div>
+                        </div>
+
+                        <!-- Navigation buttons -->
+                        <div class="assessment-nav">
+                            <button class="btn-secondary" id="prev-btn" onclick="prevQuestion()" disabled>Previous</button>
+                            <button class="btn-primary" id="next-btn" onclick="nextQuestion()">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Assessment Results (Hidden until complete) -->
+                    <div class="assessment-results" id="assessment-results" style="display: none;">
+                        <div class="results-header">
+                            <h3>Assessment Results</h3>
+                            <div class="applicability-badge" id="applicability-badge">APPLICABLE</div>
+                        </div>
+                        <div class="results-summary" id="results-summary"></div>
+                        <div class="results-actions">
+                            <button class="btn-primary" onclick="viewRemediationPlan()">View Remediation Plan</button>
+                            <button class="btn-secondary" onclick="exportAssessment()">Export Report</button>
+                            <button class="btn-secondary" onclick="startNewAssessment()">Start New</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <div class="card-title">Previous Assessments</div>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Result</th>
+                                    <th>Completeness</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assessment-history">
+                                <tr>
+                                    <td>Jan 10, 2026</td>
+                                    <td><span class="badge badge-danger">Applicable</span></td>
+                                    <td>6/8 questions</td>
+                                    <td><button class="btn-sm">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory Page (Hidden by default) -->
+            <div id="inventory-page" class="page-content" style="display: none;">
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="addDataSource()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"></path>
+                        </svg>
+                        <span>Add Data Source</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="importInventory()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"></path>
+                        </svg>
+                        <span>Import CSV</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="exportInventory()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"></path>
+                        </svg>
+                        <span>Export JSON</span>
+                    </button>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="stats-grid four-col">
+                    <div class="stat-card mini">
+                        <div class="stat-label">Data Sources</div>
+                        <div class="stat-value" id="inventory-count">12</div>
+                    </div>
+                    <div class="stat-card mini">
+                        <div class="stat-label">Health Data Fields</div>
+                        <div class="stat-value" id="field-count">47</div>
+                    </div>
+                    <div class="stat-card mini">
+                        <div class="stat-label">Sensitive Data</div>
+                        <div class="stat-value warning" id="sensitive-count">8</div>
+                    </div>
+                    <div class="stat-card mini">
+                        <div class="stat-label">Last Updated</div>
+                        <div class="stat-value small" id="last-updated">Jan 15</div>
+                    </div>
+                </div>
+
+                <!-- Add Source Modal (Hidden) -->
+                <div class="modal" id="add-source-modal" style="display: none;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add Data Source</h3>
+                            <button class="btn-close" onclick="closeModal()">&times;</button>
+                        </div>
+                        <form id="add-source-form" onsubmit="saveDataSource(event)">
+                            <div class="form-group">
+                                <label>Source Name</label>
+                                <input type="text" name="source_name" required placeholder="e.g., Patient Portal">
+                            </div>
+                            <div class="form-group">
+                                <label>Source Type</label>
+                                <select name="source_type" required>
+                                    <option value="">Select type...</option>
+                                    <option value="database">Database</option>
+                                    <option value="crm">CRM System</option>
+                                    <option value="analytics">Analytics Platform</option>
+                                    <option value="app">Mobile App</option>
+                                    <option value="website">Website/Form</option>
+                                    <option value="third_party">Third-Party Service</option>
+                                    <option value="device">IoT/Device</option>
+                                    <option value="spreadsheet">Spreadsheet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Data Categories (Select all that apply)</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" name="data_types" value="contact"> Contact Info</label>
+                                    <label><input type="checkbox" name="data_types" value="medical"> Medical Records</label>
+                                    <label><input type="checkbox" name="data_types" value="biometric"> Biometric Data</label>
+                                    <label><input type="checkbox" name="data_types" value="genetic"> Genetic Info</label>
+                                    <label><input type="checkbox" name="data_types" value="mental"> Mental Health</label>
+                                    <label><input type="checkbox" name="data_types" value="prescription"> Prescriptions</label>
+                                    <label><input type="checkbox" name="data_types" value="insurance"> Insurance Info</label>
+                                    <label><input type="checkbox" name="data_types" value="location"> Location Data</label>
+                                    <label><input type="checkbox" name="data_types" value="device"> Device IDs</label>
+                                    <label><input type="checkbox" name="data_types" value="behavioral"> Behavioral Data</label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Retention Period</label>
+                                    <select name="retention">
+                                        <option value="7_years">7 years (medical)</option>
+                                        <option value="3_years">3 years</option>
+                                        <option value="1_year">1 year</option>
+                                        <option value="request">Until request</option>
+                                        <option value="indefinite">Indefinite</option>
+                                        <option value="unknown">Unknown</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Security Level</label>
+                                    <select name="security_level">
+                                        <option value="high">High (encrypted, audited)</option>
+                                        <option value="medium">Medium (encrypted)</option>
+                                        <option value="basic">Basic (password protected)</option>
+                                        <option value="none">No protection</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Notes</label>
+                                <textarea name="notes" rows="3" placeholder="Additional details..."></textarea>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn-primary">Save Source</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Inventory Table -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Data Inventory</div>
+                            <div class="card-subtitle">All sources of consumer health data</div>
+                        </div>
+                        <div class="card-actions">
+                            <input type="text" class="search-input" placeholder="Search..." onkeyup="filterInventory(this.value)">
+                            <button class="btn-sm btn-secondary" onclick="toggleFilters()">Filters</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="inventory-list" id="inventory-list">
+                            <!-- Mock data will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Mapping Visualization -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Data Flow Map</div>
+                            <div class="card-subtitle">How health data moves through your systems</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="data-flow-viz" id="data-flow">
+                            <!-- Simple flow diagram -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
     <script>
-        // Sidebar Toggle
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-            localStorage.setItem('sidebarCollapsed', document.getElementById('sidebar').classList.contains('collapsed'));
-        }
+        // ===== NAVIGATION =====
+        let currentPage = 'dashboard';
 
-        // Mobile Sidebar
-        function openMobileSidebar() {
-            document.getElementById('sidebar').classList.add('mobile-open');
-            document.getElementById('sidebarOverlay').classList.add('mobile-open');
-        }
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.style.display = 'none';
+            });
+            document.getElementById('dashboard-page')?.classList?.remove('active-page');
 
-        function closeMobileSidebar() {
-            document.getElementById('sidebar').classList.remove('mobile-open');
-            document.getElementById('sidebarOverlay').classList.remove('mobile-open');
-        }
-
-        // User Menu
-        function toggleUserMenu() {
-            document.getElementById('userDropdown').classList.toggle('active');
-        }
-
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.user-menu')) {
-                document.getElementById('userDropdown').classList.remove('active');
+            // Show requested page
+            const pageId = pageName === 'dashboard' ? 'dashboard-page' : pageName + '-page';
+            const pageEl = document.getElementById(pageId);
+            if (pageEl) {
+                pageEl.style.display = 'block';
             }
-        });
 
-        // Navigation
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function(e) {
-                if (this.getAttribute('href') === '#') {
-                    e.preventDefault();
-                    const page = this.dataset.page;
-                    if (page) {
-                        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                        this.classList.add('active');
-                        updatePageTitle(page);
-                        closeMobileSidebar();
-                    }
+            // If dashboard, show original content
+            if (pageName === 'dashboard') {
+                const content = document.querySelector('.content');
+                if (content) {
+                    content.style.display = 'block';
+                }
+            } else {
+                const content = document.querySelector('.content');
+                if (content) {
+                    content.style.display = 'none';
+                }
+            }
+
+            // Update nav active state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.page === pageName) {
+                    item.classList.add('active');
                 }
             });
-        });
 
+            currentPage = pageName;
+            updatePageTitle(pageName);
+            closeMobileSidebar();
+
+            // Page-specific initialization
+            if (pageName === 'inventory') {
+                renderInventory();
+            }
+        }
+
+        // Assumes existing elements exist - this is additive content
         function updatePageTitle(page) {
             const titles = {
                 dashboard: 'Dashboard',
@@ -1360,28 +2292,352 @@
                 organization: 'Organization',
                 settings: 'Settings'
             };
-            document.getElementById('pageTitle').textContent = titles[page] || page;
-            document.getElementById('breadcrumbCurrent').textContent = titles[page] || page;
+            const titleEl = document.getElementById('pageTitle');
+            const breadcrumbEl = document.getElementById('breadcrumbCurrent');
+            if (titleEl) titleEl.textContent = titles[page] || page;
+            if (breadcrumbEl) breadcrumbEl.textContent = titles[page] || page;
         }
 
-        // Logout
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', document.getElementById('sidebar').classList.contains('collapsed'));
+        }
+
+        function openMobileSidebar() {
+            document.getElementById('sidebar').classList.add('mobile-open');
+            document.getElementById('sidebarOverlay').classList.add('mobile-open');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('sidebarOverlay').classList.remove('mobile-open');
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('active');
+            }
+        });
+
+        // Navigation handler
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    const page = this.dataset.page;
+                    if (page) {
+                        showPage(page);
+                    }
+                }
+            });
+        });
+
         function handleLogout() {
             localStorage.removeItem('authToken');
             window.location.href = 'auth.html';
         }
 
-        // Check auth on load
+        // ===== ASSESSMENT FUNCTIONALITY =====
+        let currentQuestion = 1;
+        const totalQuestions = 8;
+        let assessmentAnswers = {};
+
+        function nextQuestion() {
+            // Save current answer
+            saveCurrentAnswer();
+
+            if (currentQuestion < totalQuestions) {
+                document.querySelector('.question-card.active').style.display = 'none';
+                document.querySelector('.question-card.active').classList.remove('active');
+                currentQuestion++;
+                document.querySelector(`[data-step="${currentQuestion}"]`).style.display = 'block';
+                document.querySelector(`[data-step="${currentQuestion}"]`).classList.add('active');
+                updateProgress();
+            } else {
+                showResults();
+            }
+            updateNavButtons();
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                document.querySelector('.question-card.active').style.display = 'none';
+                document.querySelector('.question-card.active').classList.remove('active');
+                currentQuestion--;
+                document.querySelector(`[data-step="${currentQuestion}"]`).style.display = 'block';
+                document.querySelector(`[data-step="${currentQuestion}"]`).classList.add('active');
+                updateProgress();
+            }
+            updateNavButtons();
+        }
+
+        function saveCurrentAnswer() {
+            const activeCard = document.querySelector('.question-card.active');
+            const inputs = activeCard.querySelectorAll('input:checked');
+            const values = Array.from(inputs).map(i => i.value);
+            assessmentAnswers[`q${currentQuestion}`] = values;
+        }
+
+        function updateProgress() {
+            const percent = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = `Step ${currentQuestion} of ${totalQuestions}`;
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prev-btn').disabled = currentQuestion === 1;
+            document.getElementById('next-btn').textContent = currentQuestion === totalQuestions ? 'Finish' : 'Next';
+        }
+
+        function showResults() {
+            document.getElementById('assessment-form').style.display = 'none';
+            document.getElementById('assessment-progress').style.display = 'none';
+            document.getElementById('assessment-results').style.display = 'block';
+
+            // Calculate applicability
+            const q1 = assessmentAnswers.q1?.[0];
+            const q2 = assessmentAnswers.q2?.[0];
+
+            const isApplicable = (q1 === 'yes' || q1 === 'unsure') &&
+                                  (q2 === 'direct' || q2 === 'inferred');
+
+            const badge = document.getElementById('applicability-badge');
+            badge.textContent = isApplicable ? 'MHMDA APPLICABLE' : 'NOT APPLICABLE';
+            badge.className = 'applicability-badge ' + (isApplicable ? 'danger' : 'success');
+
+            // Generate summary
+            const summary = document.getElementById('results-summary');
+            summary.innerHTML = `
+                <div class="result-item">
+                    <strong>Geographic Scope:</strong> ${q1 === 'yes' ? 'Washington State covered' : 'Unclear'}
+                </div>
+                <div class="result-item">
+                    <strong>Data Type:</strong> ${q2 === 'direct' ? 'Direct health data' : q2 === 'inferred' ? 'Inferred health data' : 'No health data'}
+                </div>
+                <div class="result-item">
+                    <strong>Key Gaps:</strong> ${findGaps()}
+                </div>
+            `;
+
+            // Save to history
+            saveAssessmentHistory(isApplicable);
+        }
+
+        function findGaps() {
+            const gaps = [];
+            if (!assessmentAnswers.q5?.includes('explicit')) gaps.push('Consent mechanism');
+            if (!assessmentAnswers.q6?.length) gaps.push('Consumer rights process');
+            if (!assessmentAnswers.q7?.includes('encryption_rest')) gaps.push('Encryption at rest');
+            return gaps.length ? gaps.join(', ') : 'None identified';
+        }
+
+        function startNewAssessment() {
+            currentQuestion = 1;
+            assessmentAnswers = {};
+            document.querySelectorAll('.question-card').forEach((card, i) => {
+                card.style.display = i === 0 ? 'block' : 'none';
+                card.classList.toggle('active', i === 0);
+                card.querySelectorAll('input').forEach(input => input.checked = false);
+            });
+            document.getElementById('assessment-form').style.display = 'block';
+            document.getElementById('assessment-progress').style.display = 'block';
+            document.getElementById('assessment-results').style.display = 'none';
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function exportAssessment() {
+            const data = {
+                date: new Date().toISOString(),
+                answers: assessmentAnswers,
+                result: document.getElementById('applicability-badge').textContent
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mhmda-assessment-${Date.now()}.json`;
+            a.click();
+        }
+
+        function runApplicabilityCheck() {
+            alert('Quick check: Based on your industry (medical-adjacent services), MHMDA likely applies. Complete full assessment for confirmation.');
+        }
+
+        function viewRemediationPlan() {
+            showPage('remediation');
+        }
+
+        function saveAssessmentHistory(result) {
+            const history = document.getElementById('assessment-history');
+            const date = new Date().toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${date}</td>
+                <td><span class="badge ${result ? 'badge-danger' : 'badge-success'}">${result ? 'Applicable' : 'Not Applicable'}</span></td>
+                <td>${Object.keys(assessmentAnswers).length}/${totalQuestions} questions</td>
+                <td><button class="btn-sm">View</button></td>
+            `;
+            history.insertBefore(row, history.firstChild);
+        }
+
+        // ===== INVENTORY FUNCTIONALITY =====
+        let inventoryData = [
+            {id: 1, name: 'Patient Portal', type: 'app', categories: ['contact', 'medical', 'prescription'], retention: '7_years', security: 'high', notes: 'Main patient data repository'},
+            {id: 2, name: 'Google Analytics', type: 'analytics', categories: ['behavioral', 'device'], retention: '14_months', security: 'medium', notes: 'Tracks website usage'},
+            {id: 3, name: 'Mailchimp', type: 'crm', categories: ['contact'], retention: 'indefinite', security: 'medium', notes: 'Email marketing platform'},
+            {id: 4, name: 'Wearable Sync', type: 'device', categories: ['biometric', 'location'], retention: '3_years', security: 'high', notes: 'Connects to patient devices'},
+            {id: 5, name: 'Insurance DB', type: 'database', categories: ['insurance', 'contact'], retention: '7_years', security: 'high', notes: 'Insurance provider integration'}
+        ];
+
+        function renderInventory() {
+            const list = document.getElementById('inventory-list');
+            if (!list) return;
+
+            list.innerHTML = inventoryData.map(item => `
+                <div class="inventory-item" data-id="${item.id}">
+                    <div class="inventory-header">
+                        <div class="inventory-title">
+                            <strong>${item.name}</strong>
+                            <span class="badge badge-${getTypeColor(item.type)}">${item.type}</span>
+                        </div>
+                        <div class="inventory-actions">
+                            <button class="btn-sm" onclick="editSource(${item.id})">Edit</button>
+                            <button class="btn-sm btn-danger" onclick="deleteSource(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                    <div class="inventory-details">
+                        <div>Data Types: ${item.categories.map(c => formatCategory(c)).join(', ')}</div>
+                        <div>Retention: ${formatRetention(item.retention)}</div>
+                        <div>Security: ${item.security}</div>
+                        <div class="inventory-notes">${item.notes}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update counts
+            document.getElementById('inventory-count').textContent = inventoryData.length;
+            const sensitive = inventoryData.filter(i => i.categories.includes('medical') || i.categories.includes('biometric') || i.categories.includes('genetic')).length;
+            document.getElementById('sensitive-count').textContent = sensitive;
+        }
+
+        function getTypeColor(type) {
+            const colors = {database: 'primary', crm: 'info', analytics: 'warning', app: 'success', device: 'danger'};
+            return colors[type] || 'secondary';
+        }
+
+        function formatCategory(cat) {
+            const labels = {
+                contact: 'Contact Info', medical: 'Medical Records', biometric: 'Biometric Data',
+                genetic: 'Genetic Info', mental: 'Mental Health', prescription: 'Prescriptions',
+                insurance: 'Insurance Info', location: 'Location Data', device: 'Device IDs',
+                behavioral: 'Behavioral Data'
+            };
+            return labels[cat] || cat;
+        }
+
+        function formatRetention(retention) {
+            const labels = {
+                '7_years': '7 years (medical)', '3_years': '3 years', '1_year': '1 year',
+                'request': 'Until request', 'indefinite': 'Indefinite', 'unknown': 'Unknown'
+            };
+            return labels[retention] || retention;
+        }
+
+        function addDataSource() {
+            document.getElementById('add-source-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('add-source-modal').style.display = 'none';
+            document.getElementById('add-source-form').reset();
+        }
+
+        function saveDataSource(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {
+                id: Date.now(),
+                name: form.source_name.value,
+                type: form.source_type.value,
+                categories: Array.from(form.querySelectorAll('input[name="data_types"]:checked')).map(cb => cb.value),
+                retention: form.retention.value,
+                security: form.security_level.value,
+                notes: form.notes.value
+            };
+            inventoryData.push(data);
+            closeModal();
+            renderInventory();
+        }
+
+        function deleteSource(id) {
+            if (confirm('Delete this data source?')) {
+                inventoryData = inventoryData.filter(i => i.id !== id);
+                renderInventory();
+            }
+        }
+
+        function editSource(id) {
+            const item = inventoryData.find(i => i.id === id);
+            if (item) {
+                // Populate and show modal with existing data
+                addDataSource(); // Will need enhancement for edit mode
+            }
+        }
+
+        function filterInventory(query) {
+            const items = document.querySelectorAll('.inventory-item');
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(query.toLowerCase()) ? 'block' : 'none';
+            });
+        }
+
+        function toggleFilters() {
+            // Filter panel toggle - simplified
+            alert('Filter by type, security level, or data category');
+        }
+
+        function importInventory() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.csv,.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                alert(`Importing ${file.name}... (CSV/JSON parsing would happen here)`);
+            };
+            input.click();
+        }
+
+        function exportInventory() {
+            const blob = new Blob([JSON.stringify(inventoryData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `data-inventory-${Date.now()}.json`;
+            a.click();
+        }
+
+        // Initialize
         (function() {
             const token = localStorage.getItem('authToken');
             if (!token) {
-                // In demo mode, we'll create a mock token
                 localStorage.setItem('authToken', 'demo-token-123');
             }
 
-            // Restore sidebar state
             if (localStorage.getItem('sidebarCollapsed') === 'true') {
                 document.getElementById('sidebar').classList.add('collapsed');
             }
+
+            // Set up dashboard as default
+            const content = document.querySelector('.quick-actions').parentElement;
+            content.id = 'dashboard-page';
+            content.classList.add('page-content');
         })();
     </script>
 </body>
