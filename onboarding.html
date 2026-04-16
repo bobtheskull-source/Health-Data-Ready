@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Data Ready - Onboarding</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0ea5e9">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .exit-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .exit-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--bg-card);
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 2px;
+            background: var(--primary);
+            z-index: 0;
+            transition: width 0.3s ease;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-indicator {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .step.completed .step-indicator {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .step.active .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px;
+            overflow-y: auto;
+        }
+
+        .wizard-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        label .required {
+            color: var(--danger);
+            margin-left: 4px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+        }
+
+        input.error,
+        select.error,
+        textarea.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .hint {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Checkbox/Radio Groups */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .option-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .option-card:hover {
+            border-color: var(--bg-hover);
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: rgba(14, 165, 233, 0.1);
+        }
+
+        .option-card input {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .option-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .option-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .option-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .check-mark {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .option-card.selected .check-mark {
+            display: flex;
+        }
+
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .toggle-info h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .toggle-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--primary);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(24px);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Summary Step */
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .summary-section {
+            margin-bottom: 20px;
+        }
+
+        .summary-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-section h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .summary-section p {
+            font-size: 15px;
+        }
+
+        .summary-edit {
+            float: right;
+            font-size: 12px;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Success State */
+        .success-container {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--success);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+        }
+
+        .success-container h2 {
+            margin-bottom: 12px;
+        }
+
+        .success-container p {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .option-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step-label {
+                font-size: 10px;
+            }
+
+            .button-group {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">H</div>
+            <span>Health Data Ready</span>
+        </div>
+        <button class="exit-btn" onclick="saveAndExit()">Save & Exit</button>
+    </header>
+
+    <div class="progress-container">
+        <div class="progress-steps">
+            <div class="progress-line" id="progressLine" style="width: 0%"></div>
+            <div class="step active" data-step="1">
+                <div class="step-indicator">1</div>
+                <span class="step-label">Organization</span>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-indicator">2</div>
+                <span class="step-label">Business Type</span>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-indicator">3</div>
+                <span class="step-label">Assessment</span>
+            </div>
+            <div class="step" data-step="4">
+                <div class="step-indicator">4</div>
+                <span class="step-label">Review</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="wizard-container">
+            <!-- Step 1: Organization Info -->
+            <div class="step-content active" id="step1">
+                <h2>Tell us about your organization</h2>
+                <p class="subtitle">This helps us understand your compliance requirements</p>
+
+                <div class="form-group">
+                    <label>Organization Name <span class="required">*</span></label>
+                    <input type="text" id="orgName" placeholder="e.g., Acme Medical Supplies">
+                    <div class="error-message">Organization name is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Website</label>
+                    <input type="url" id="orgWebsite" placeholder="https://www.example.com">
+                    <p class="hint">We'll scan this for trackers and compliance issues</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Industry Category <span class="required">*</span></label>
+                    <select id="orgIndustry">
+                        <option value="">Select your industry</option>
+                        <option value="medical_practice">Medical Practice / Clinic</option>
+                        <option value="wellness_coaching">Wellness Coaching</option>
+                        <option value="fitness">Fitness / Gym</option>
+                        <option value="nutrition">Nutrition Services</option>
+                        <option value="mental_health">Mental Health / Therapy</option>
+                        <option value="telehealth">Telehealth Platform</option>
+                        <option value="health_app">Health/Mental Health App</option>
+                        <option value="medical_device">Medical Device Sales</option>
+                        <option value="pharmacy">Pharmacy</option>
+                        <option value="insurance">Health Insurance</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div class="error-message">Please select an industry</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Primary Business Location <span class="required">*</span></label>
+                    <select id="orgLocation">
+                        <option value="">Select primary location</option>
+                        <option value="wa">Washington State</option>
+                        <option value="wa_consumers">Outside WA, but serve WA consumers</option>
+                        <option value="other">Neither (may not need MHMDA compliance)</option>
+                    </select>
+                    <div class="error-message">Location is required</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Approximate number of consumers whose health data you process</label>
+                    <select id="orgScale">
+                        <option value="under_100">Under 100</option>
+                        <option value="100_1000">100 - 1,000</option>
+                        <option value="1000_10000">1,000 - 10,000</option>
+                        <option value="over_10000">Over 10,000</option>
+                    </select>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Business Type -->
+            <div class="step-content" id="step2">
+                <h2>What type of business are you?</h2>
+                <p class="subtitle">Select all that apply to your organization</p>
+
+                <div class="option-grid">
+                    <label class="option-card" onclick="toggleOption(this, 'regulated_entity')">
+                        <input type="checkbox" name="businessType" value="regulated_entity">
+                        <span class="check-mark">✓</span>
+                        <div class="option-icon">🏥</div>
+                        <div class="option-title">Regulated Entity</div>
+                        <div class="option-desc">Healthcare provider, facility, or HIPAA-covered entity</div>
+                    </label>
+
+                    <label class="option-card" onclick="toggleOption(this, 'small_business')">
+                        <input type="checkbox" name="businessType" value="small_business">
+                        <span class="check-mark">✓</span>
+                        <div class="option-icon">🏢</div>
+                        <div class="option-title">Small Business</div>
+                        <div class="option-desc">Less than $25M revenue or fewer resources</div>
+                    </label>
+
+                    <label class="option-card" onclick="toggleOption(this, 'processor')">
+                        <input type="checkbox" name="businessType" value="processor">
+                        <span class="check-mark">✓</span>
+                        <div class="option-icon">⚙️</div>
+                        <div class="option-title">Processor</div>
+                        <div class="option-desc">Process health data on behalf of other businesses</div>
+                    </label>
+
+                    <label class="option-card" onclick="toggleOption(this, 'geofencing')">
+                        <input type="checkbox" name="businessType" value="geofencing">
+                        <span class="check-mark">✓</span>
+                        <div class="option-icon">📍</div>
+                        <div class="option-title">Geofencing User</div>
+                        <div class="option-desc">Use location-based targeting near healthcare facilities</div>
+                    </label>
+                </div>
+
+                <div class="form-group" style="margin-top: 32px;">
+                    <label>Do you collect consumer health data?</label>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Consumer Health Data Collection</h4>
+                            <p>We collect health information directly from individuals</p>
+                        </div>
+                        <div class="toggle" id="collectsDataToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Initial Assessment -->
+            <div class="step-content" id="step3">
+                <h2>Quick compliance assessment</h2>
+                <p class="subtitle">These questions help determine your immediate compliance needs</p>
+
+                <div class="form-group">
+                    <label>Do you have a published privacy policy?</label>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Privacy Policy</h4>
+                            <p>A public-facing document explaining data practices</p>
+                        </div>
+                        <div class="toggle" id="privacyPolicyToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Do you share health data with third parties?</label>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Third Party Sharing</h4>
+                            <p>Analytics, advertising, cloud providers, etc.</p>
+                        </div>
+                        <div class="toggle" id="sharesDataToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Do you have a process for handling consumer rights requests?</label>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Rights Request Process</h4>
+                            <p>Deletion, access, portability requests from consumers</p>
+                        </div>
+                        <div class="toggle" id="rightsProcessToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Do you sell health data to data brokers?</label>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Data Sales</h4>
+                            <p>Exchanging health data for monetary or other valuable consideration</p>
+                        </div>
+                        <div class="toggle" id="sellsDataToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                    <p class="hint" style="color: var(--danger);">⚠️ Selling consumer health data without consent is prohibited under MHMDA</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Have you conducted a data inventory within the last year?</label>
+                    <div class="toggle-group">
+                        <div class="toggle-info">
+                            <h4>Data Inventory</h4>
+                            <p>Systematic review of what health data you collect, where it's stored, and how it's used</p>
+                        </div>
+                        <div class="toggle" id="inventoryToggle" onclick="toggleSwitch(this)"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Review -->
+            <div class="step-content" id="step4">
+                <h2>Review your information</h2>
+                <p class="subtitle">Confirm everything is correct before continuing</p>
+
+                <div class="summary-card">
+                    <div class="summary-section">
+                        <span class="summary-edit" onclick="goToStep(1)">Edit</span>
+                        <h4>Organization</h4>
+                        <p id="summaryOrgName">-</p>
+                        <p id="summaryOrgWebsite" style="color: var(--text-secondary); font-size: 13px;">-</p>
+                        <p id="summaryOrgIndustry" style="margin-top: 8px;">-</p>
+                    </div>
+                    <div class="summary-section">
+                        <span class="summary-edit" onclick="goToStep(1)">Edit</span>
+                        <h4>Location & Scale</h4>
+                        <p id="summaryLocation">-</p>
+                        <p id="summaryScale" style="color: var(--text-secondary); font-size: 13px; margin-top: 4px;">-</p>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-section">
+                        <span class="summary-edit" onclick="goToStep(2)">Edit</span>
+                        <h4>Business Type</h4>
+                        <p id="summaryBusinessType">-</p>
+                    </div>
+                    <div class="summary-section">
+                        <h4>Data Collection</h4>
+                        <p id="summaryDataCollection">-</p>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-section">
+                        <span class="summary-edit" onclick="goToStep(3)">Edit</span>
+                        <h4>Compliance Status</h4>
+                        <p id="summaryComplianceStatus">-</p>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn btn-primary" onclick="completeOnboarding()">Complete Setup</button>
+                </div>
+            </div>
+
+            <!-- Success Screen -->
+            <div class="step-content" id="stepSuccess">
+                <div class="success-container">
+                    <div class="success-icon">✓</div>
+                    <h2>You're all set!</h2>
+                    <p>Your organization profile has been created. Let's explore your dashboard.</p>
+                    <button class="btn btn-primary" onclick="window.location.href='dashboard.html'" style="min-width: 200px;">Go to Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        // Form data storage
+        let formData = {
+            organization: {},
+            businessType: {},
+            assessment: {}
+        };
+
+        // Load saved progress
+        (function() {
+            const saved = localStorage.getItem('onboardingProgress');
+            if (saved) {
+                formData = JSON.parse(saved);
+                populateForm();
+            }
+        })();
+
+        function populateForm() {
+            // Populate step 1
+            if (formData.organization.name) document.getElementById('orgName').value = formData.organization.name;
+            if (formData.organization.website) document.getElementById('orgWebsite').value = formData.organization.website;
+            if (formData.organization.industry) document.getElementById('orgIndustry').value = formData.organization.industry;
+            if (formData.organization.location) document.getElementById('orgLocation').value = formData.organization.location;
+            if (formData.organization.scale) document.getElementById('orgScale').value = formData.organization.scale;
+
+            // Populate step 2 toggles
+            if (formData.businessType.collectsData) {
+                document.getElementById('collectsDataToggle').classList.add('active');
+            }
+
+            // Populate step 3 toggles
+            if (formData.assessment.privacyPolicy) {
+                document.getElementById('privacyPolicyToggle').classList.add('active');
+            }
+            if (formData.assessment.sharesData) {
+                document.getElementById('sharesDataToggle').classList.add('active');
+            }
+            if (formData.assessment.rightsProcess) {
+                document.getElementById('rightsProcessToggle').classList.add('active');
+            }
+            if (formData.assessment.sellsData) {
+                document.getElementById('sellsDataToggle').classList.add('active');
+            }
+            if (formData.assessment.inventory) {
+                document.getElementById('inventoryToggle').classList.add('active');
+            }
+
+            // Populate checkboxes
+            if (formData.businessType.types) {
+                formData.businessType.types.forEach(type => {
+                    const checkbox = document.querySelector(`input[value="${type}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        checkbox.closest('.option-card').classList.add('selected');
+                    }
+                });
+            }
+        }
+
+        function nextStep() {
+            if (!validateStep(currentStep)) return;
+
+            saveStepData(currentStep);
+
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateUI();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        function goToStep(step) {
+            currentStep = step;
+            updateUI();
+        }
+
+        function updateUI() {
+            // Update progress bar
+            const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            document.getElementById('progressLine').style.width = progress + '%';
+
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Show/hide step content
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('step' + currentStep).classList.add('active');
+
+            // If on review step, update summary
+            if (currentStep === 4) {
+                updateSummary();
+            }
+        }
+
+        function validateStep(step) {
+            let valid = true;
+
+            if (step === 1) {
+                const orgName = document.getElementById('orgName');
+                const orgIndustry = document.getElementById('orgIndustry');
+                const orgLocation = document.getElementById('orgLocation');
+
+                if (!orgName.value.trim()) {
+                    orgName.classList.add('error');
+                    orgName.nextElementSibling.classList.add('visible');
+                    valid = false;
+                } else {
+                    orgName.classList.remove('error');
+                    orgName.nextElementSibling.classList.remove('visible');
+                }
+
+                if (!orgIndustry.value) {
+                    orgIndustry.classList.add('error');
+                    orgIndustry.nextElementSibling.classList.add('visible');
+                    valid = false;
+                } else {
+                    orgIndustry.classList.remove('error');
+                    orgIndustry.nextElementSibling.classList.remove('visible');
+                }
+
+                if (!orgLocation.value) {
+                    orgLocation.classList.add('error');
+                    orgLocation.nextElementSibling.classList.add('visible');
+                    valid = false;
+                } else {
+                    orgLocation.classList.remove('error');
+                    orgLocation.nextElementSibling.classList.remove('visible');
+                }
+            }
+
+            return valid;
+        }
+
+        function saveStepData(step) {
+            if (step === 1) {
+                formData.organization = {
+                    name: document.getElementById('orgName').value,
+                    website: document.getElementById('orgWebsite').value,
+                    industry: document.getElementById('orgIndustry').value,
+                    industryName: document.getElementById('orgIndustry').selectedOptions[0]?.text || '',
+                    location: document.getElementById('orgLocation').value,
+                    locationName: document.getElementById('orgLocation').selectedOptions[0]?.text || '',
+                    scale: document.getElementById('orgScale').value,
+                    scaleName: document.getElementById('orgScale').selectedOptions[0]?.text || ''
+                };
+            } else if (step === 2) {
+                const selectedTypes = Array.from(document.querySelectorAll('input[name="businessType"]:checked'))
+                    .map(cb => cb.value);
+                formData.businessType = {
+                    types: selectedTypes,
+                    collectsData: document.getElementById('collectsDataToggle').classList.contains('active')
+                };
+            } else if (step === 3) {
+                formData.assessment = {
+                    privacyPolicy: document.getElementById('privacyPolicyToggle').classList.contains('active'),
+                    sharesData: document.getElementById('sharesDataToggle').classList.contains('active'),
+                    rightsProcess: document.getElementById('rightsProcessToggle').classList.contains('active'),
+                    sellsData: document.getElementById('sellsDataToggle').classList.contains('active'),
+                    inventory: document.getElementById('inventoryToggle').classList.contains('active')
+                };
+            }
+
+            localStorage.setItem('onboardingProgress', JSON.stringify(formData));
+        }
+
+        function updateSummary() {
+            document.getElementById('summaryOrgName').textContent = formData.organization.name || '-';
+            document.getElementById('summaryOrgWebsite').textContent = formData.organization.website || 'No website provided';
+            document.getElementById('summaryOrgIndustry').textContent = formData.organization.industryName || '-';
+            document.getElementById('summaryLocation').textContent = formData.organization.locationName || '-';
+            document.getElementById('summaryScale').textContent = formData.organization.scaleName || 'Not specified';
+
+            const typeNames = {
+                regulated_entity: 'Regulated Entity',
+                small_business: 'Small Business',
+                processor: 'Processor',
+                geofencing: 'Geofencing User'
+            };
+            const selectedTypes = (formData.businessType.types || [])
+                .map(t => typeNames[t] || t)
+                .join(', ') || 'None selected';
+            document.getElementById('summaryBusinessType').textContent = selectedTypes;
+            document.getElementById('summaryDataCollection').textContent = 
+                formData.businessType.collectsData ? 'Yes, we collect consumer health data' : 'No consumer health data collection';
+
+            // Compliance status summary
+            const issues = [];
+            if (!formData.assessment.privacyPolicy) issues.push('Missing privacy policy');
+            if (!formData.assessment.rightsProcess) issues.push('No rights request process');
+            if (!formData.assessment.inventory) issues.push('No data inventory');
+            if (formData.assessment.sellsData) issues.push('⚠️ Selling health data');
+
+            document.getElementById('summaryComplianceStatus').innerHTML = 
+                issues.length > 0 
+                    ? 'Areas needing attention:<br>' + issues.map(i => '• ' + i).join('<br>')
+                    : '✓ Basic compliance measures in place';
+        }
+
+        function toggleOption(card, value) {
+            card.classList.toggle('selected');
+            const checkbox = card.querySelector('input');
+            checkbox.checked = card.classList.contains('selected');
+        }
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+        }
+
+        function completeOnboarding() {
+            saveStepData(4);
+            localStorage.setItem('onboardingComplete', 'true');
+            localStorage.removeItem('onboardingProgress');
+
+            // Show success
+            document.getElementById('step4').classList.remove('active');
+            document.getElementById('stepSuccess').classList.add('active');
+
+            // Hide progress bar
+            document.querySelector('.progress-container').style.display = 'none';
+        }
+
+        function saveAndExit() {
+            saveStepData(currentStep);
+            window.location.href = 'dashboard.html';
+        }
+
+        // Check if already onboarded
+        if (localStorage.getItem('onboardingComplete')) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>

@@ -420,9 +420,10 @@
                     
                     showAlert('Login successful! Redirecting...', 'success');
                     
-                    // Redirect to dashboard (create dashboard.html next)
+                    // Redirect to onboarding for new users
                     setTimeout(() => {
-                        window.location.href = 'dashboard.html';
+                        const hasOnboarded = localStorage.getItem('onboardingComplete');
+                        window.location.href = hasOnboarded ? 'dashboard.html' : 'onboarding.html';
                     }, 1000);
                 } else {
                     // Real API call
