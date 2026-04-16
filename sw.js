@@ -1,10 +1,17 @@
-const CACHE_NAME = 'hdr-cache-v2';
+const CACHE_NAME = 'hdr-cache-v3';
 const STATIC_ASSETS = [
   '/Health-Data-Ready/',
   '/Health-Data-Ready/index.html',
   '/Health-Data-Ready/auth.html',
   '/Health-Data-Ready/onboarding.html',
-  '/Health-Data-Ready/dashboard.html'
+  '/Health-Data-Ready/dashboard.html',
+  '/Health-Data-Ready/engagement.html',
+  '/Health-Data-Ready/workspace.html',
+  '/Health-Data-Ready/doc-device-inventory.html',
+  '/Health-Data-Ready/doc-vulnerability.html',
+  '/Health-Data-Ready/row-table-styles.css',
+  '/Health-Data-Ready/data-model.js',
+  '/Health-Data-Ready/row-table-engine.js'
 ];
 
 // Install: cache static assets
