@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hdr-cache-v3';
+const CACHE_NAME = 'hdr-cache-v5';
 const STATIC_ASSETS = [
   '/Health-Data-Ready/',
   '/Health-Data-Ready/index.html',
@@ -9,11 +9,12 @@ const STATIC_ASSETS = [
   '/Health-Data-Ready/workspace.html',
   '/Health-Data-Ready/doc-device-inventory.html',
   '/Health-Data-Ready/doc-vulnerability.html',
+  '/Health-Data-Ready/doc-mhmd-compliance.html',
+  '/Health-Data-Ready/doc-remediation.html',
   '/Health-Data-Ready/row-table-styles.css',
   '/Health-Data-Ready/data-model.js',
   '/Health-Data-Ready/row-table-engine.js'
 ];
-
 // Install: cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(

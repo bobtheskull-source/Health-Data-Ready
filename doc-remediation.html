@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document | Remediation Plan and Task Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="row-table-styles.css">
+</head>
+<body>
+  <div class="page">
+    <!-- Persistent Identity Header -->
+    <header class="identity-bar">
+      <div class="identity-left">
+        <span class="back-link" onclick="window.location.href='workspace.html'">← Workspace</span>
+        <span class="divider">|</span>
+        <span class="engagement-name" id="engagementName">Loading...</span>
+      </div>
+      <div class="identity-right">
+        <span class="doc-type">Remediation Plan</span>
+      </div>
+    </header>
+
+    <main class="document-sheet">
+      <header class="doc-header">
+        <h1>Remediation Plan and Task Tracker</h1>
+        <p class="doc-description">Track and manage corrective actions from assessments, compliance gaps, and security findings.</p>
+      </header>
+
+      <!-- Import Sources -->
+      <section class="doc-section" id="importSection">
+        <h2>Import Findings and Gaps</h2>
+        <p class="section-help">Pull in items to remediate from other documents in this engagement.</p>
+        
+        <div class="import-sources">
+          <div class="import-card" id="mhmdImport">
+            <div class="import-header">
+              <h3>MHMD Compliance Gaps</h3>
+              <span class="import-count" id="mhmdGapCount">Checking...</span>
+            </div>
+            <p class="import-desc">Import compliance gaps and partial implementations identified in the MHMD Compliance Checklist.</p>
+            <button class="btn-secondary" onclick="importFromMHMD()" id="mhmdImportBtn" disabled>
+              Import Gaps
+            </button>
+          </div>
+
+          <div class="import-card" id="vulnImport">
+            <div class="import-header">
+              <h3>Vulnerability Findings</h3>
+              <span class="import-count" id="vulnFindingCount">Checking...</span>
+            </div>
+            <p class="import-desc">Import security findings from the Vulnerability Assessment that require remediation.</p>
+            <button class="btn-secondary" onclick="importFromVulnerability()" id="vulnImportBtn" disabled>
+              Import Findings
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Remediation Tasks -->
+      <section class="doc-section">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Remediation Tasks</h2>
+            <p class="section-help" id="taskSummary">Define specific, actionable tasks to address findings and close compliance gaps.</p>
+          </div>
+          <div class="section-actions">
+            <button class="btn-primary" onclick="taskTable.addRow()">+ Add Task</button>
+          </div>
+        </header>
+
+        <div id="taskTableContainer"></div>
+      </section>
+
+      <!-- Remediation Stats -->
+      <section class="doc-section">
+        <h2>Progress Overview</h2>
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <span class="stat-value" id="totalTasks">0</span>
+            <span class="stat-label">Total Tasks</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="openTasks">0</span>
+            <span class="stat-label">Open / In Progress</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="completedTasks">0</span>
+            <span class="stat-label">Completed</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="overdueTasks">0</span>
+            <span class="stat-label">Overdue</span>
+          </div>
+        </div>
+
+        <div class="priority-breakdown" id="priorityBreakdown">
+          <div class="priority-bar">
+            <div class="priority-segment critical" id="criticalBar" style="width: 0%"></div>
+            <div class="priority-segment high" id="highBar" style="width: 0%"></div>
+            <div class="priority-segment medium" id="mediumBar" style="width: 0%"></div>
+            <div class="priority-segment low" id="lowBar" style="width: 0%"></div>
+          </div>
+          <div class="priority-legend">
+            <span class="legend-item"><span class="legend-dot critical"></span> Critical</span>
+            <span class="legend-item"><span class="legend-dot high"></span> High</span>
+            <span class="legend-item"><span class="legend-dot medium"></span> Medium</span>
+            <span class="legend-item"><span class="legend-dot low"></span> Low</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Remediation Priorities -->
+      <section class="doc-section" id="priorityGuidance">
+        <h2>Priority Guidelines</h2>
+        <div class="guidance-grid">
+          <div class="guidance-card critical">
+            <h4>Critical</h4>
+            <p>Immediate legal exposure or active security incident. Requires action within 7 days.</p>
+            <ul>
+              <li>Active breach or data leak</li>
+              <li>Missing required privacy policy</li>
+              <li>Processing health data without consent</li>
+            </ul>
+          </div>
+          <div class="guidance-card high">
+            <h4>High</h4>
+            <p>Significant compliance gap or high-risk finding. Action within 30 days.</p>
+            <ul>
+              <li>Missing consumer rights process</li>
+              <li>Critical vulnerability (CVSS 9.0+)</li>
+              <li>No data processing agreements</li>
+            </ul>
+          </div>
+          <div class="guidance-card medium">
+            <h4>Medium</h4>
+            <p>Moderate gap or general hardening. Action within 90 days.</p>
+            <ul>
+              <li>Partial consent mechanism</li>
+              <li>Missing security documentation</li>
+              <li>High vulnerability (CVSS 7.0-8.9)</li>
+            </ul>
+          </div>
+          <div class="guidance-card low">
+            <h4>Low</h4>
+            <p>Best practice improvements or informational items. Action when resources allow.</p>
+            <ul>
+              <li>Policy wording improvements</li>
+              <li>Additional monitoring</li>
+              <li>Staff training refresh</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <section class="doc-section">
+        <h2>Implementation Notes</h2>
+        <textarea class="form-textarea" id="implementationNotes" rows="4" placeholder="Document timelines, resource constraints, dependencies between tasks, or mitigation strategies..."></textarea>
+      </section>
+
+      <!-- Document Footer -->
+      <footer class="doc-footer">
+        <div class="save-status">
+          <span id="saveStatus">Saved</span>
+          <span class="last-saved" id="lastSaved"></span>
+        </div>
+        <div class="doc-actions">
+          <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+          <button class="btn-primary" onclick="saveDocument()">Save Document</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data-model.js"></script>
+  <script src="row-table-engine.js"></script>
+  <script>
+    // Document state
+    const DOC_TYPE = 'remediation-plan';
+    let engagementId = null;
+    let documentId = null;
+    let taskTable = null;
+    let autoSaveTimer = null;
+
+    // Task row table config
+    const taskColumns = [
+      {
+        key: 'task_id',
+        header: 'ID',
+        type: 'text',
+        width: '80px',
+        readonly: true,
+        placeholder: 'Auto'
+      },
+      {
+        key: 'source_type',
+        header: 'Source Doc',
+        type: 'select',
+        width: '130px',
+        options: [
+          { value: 'manual', label: 'Manual Entry' },
+          { value: 'mhmd', label: 'MHMD Compliance' },
+          { value: 'vulnerability', label: 'Vulnerability Assessment' },
+          { value: 'hipaa', label: 'HIPAA Attestation' },
+          { value: 'data_inventory', label: 'Data Inventory' }
+        ]
+      },
+      {
+        key: 'source_reference',
+        header: 'Source Ref',
+        type: 'text',
+        width: '120px',
+        placeholder: 'e.g., RCW 19.373.040'
+      },
+      {
+        key: 'description',
+        header: 'Task Description',
+        type: 'text',
+        width: 'flex',
+        placeholder: 'Specific actionable task...',
+        required: true
+      },
+      {
+        key: 'priority',
+        header: 'Priority',
+        type: 'select',
+        width: '100px',
+        options: [
+          { value: 'critical', label: 'Critical' },
+          { value: 'high', label: 'High' },
+          { value: 'medium', label: 'Medium' },
+          { value: 'low', label: 'Low' }
+        ]
+      },
+      {
+        key: 'status',
+        header: 'Status',
+        type: 'select',
+        width: '110px',
+        options: [
+          { value: 'open', label: 'Open' },
+          { value: 'in_progress', label: 'In Progress' },
+          { value: 'blocked', label: 'Blocked' },
+          { value: 'completed', label: 'Completed' },
+          { value: 'deferred', label: 'Deferred' }
+        ]
+      },
+      {
+        key: 'owner',
+        header: 'Owner',
+        type: 'text',
+        width: '120px',
+        placeholder: 'Responsible person'
+      },
+      {
+        key: 'due_date',
+        header: 'Due Date',
+        type: 'date',
+        width: '120px'
+      },
+      {
+        key: 'notes',
+        header: 'Notes',
+        type: 'text',
+        width: '150px',
+        placeholder: 'Additional context...'
+      }
+    ];
+
+    // Initialize
+    async function init() {
+      await loadEngagement();
+      
+      // Initialize task table
+      taskTable = new RowTableEngine('taskTableContainer', taskColumns, {
+        onChange: () => {
+          updateStats();
+          scheduleAutoSave();
+        }
+      });
+      
+      await loadOrCreateDocument();
+      checkImportAvailability();
+      updateStats();
+      startAutoSave();
+    }
+
+    async function loadEngagement() {
+      const params = new URLSearchParams(window.location.search);
+      engagementId = params.get('engagement');
+      
+      if (!engagementId) {
+        window.location.href = 'engagement.html';
+        return;
+      }
+
+      const engagement = await HealthDataDB.getEngagement(engagementId);
+      if (engagement) {
+        document.getElementById('engagementName').textContent = engagement.engagementName;
+      }
+    }
+
+    async function loadOrCreateDocument() {
+      const docs = await HealthDataDB.getDocuments(engagementId, DOC_TYPE);
+      
+      if (docs.length > 0) {
+        documentId = docs[0].id;
+        const data = docs[0].data || {};
+        
+        if (data.tasks && data.tasks.length > 0) {
+          data.tasks.forEach(task => taskTable.addRow(task));
+        }
+        
+        if (data.implementationNotes) {
+          document.getElementById('implementationNotes').value = data.implementationNotes;
+        }
+        
+        if (data.lastSaved) {
+          document.getElementById('lastSaved').textContent = new Date(data.lastSaved).toLocaleString();
+        }
+      }
+    }
+
+    async function checkImportAvailability() {
+      // Check MHMD document for gaps
+      const mhmdDocs = await HealthDataDB.getDocuments(engagementId, 'mhmd-compliance');
+      if (mhmdDocs.length > 0 && mhmdDocs[0].data?.checklist) {
+        const gaps = mhmdDocs[0].data.checklist.filter(c => c.status === 'gap' || c.status === 'partial');
+        document.getElementById('mhmdGapCount').textContent = `${gaps.length} gap${gaps.length !== 1 ? 's' : ''} found`;
+        document.getElementById('mhmdImportBtn').disabled = gaps.length === 0;
+        document.getElementById('mhmdImport').dataset.gaps = JSON.stringify(gaps);
+        
+        // Store requirement details for reference
+        document.getElementById('mhmdImport').dataset.checklist = JSON.stringify(mhmdDocs[0].data.checklist);
+      } else {
+        document.getElementById('mhmdGapCount').textContent = 'No document';
+        document.getElementById('mhmdImportBtn').disabled = true;
+      }
+
+      // Check Vulnerability document for findings
+      const vulnDocs = await HealthDataDB.getDocuments(engagementId, 'vulnerability-assessment');
+      if (vulnDocs.length > 0 && vulnDocs[0].data?.findings) {
+        const openFindings = vulnDocs[0].data.findings.filter(f => 
+          f.status !== 'Remediated' && f.status !== 'Accepted Risk'
+        );
+        document.getElementById('vulnFindingCount').textContent = `${openFindings.length} open finding${openFindings.length !== 1 ? 's' : ''}`;
+        document.getElementById('vulnImportBtn').disabled = openFindings.length === 0;
+        // Store the checklists to map risk_score to severity
+        document.getElementById('vulnImport').dataset.findings = JSON.stringify(vulnDocs[0].data.findings);
+        if (vulnDocs[0].data.checklists) {
+          document.getElementById('vulnImport').dataset.checklists = JSON.stringify(vulnDocs[0].data.checklists);
+        }
+      } else {
+        document.getElementById('vulnFindingCount').textContent = 'No document';
+        document.getElementById('vulnImportBtn').disabled = true;
+      }
+    }
+
+    async function importFromMHMD() {
+      const gaps = JSON.parse(document.getElementById('mhmdImport').dataset.gaps || '[]');
+      const checklist = JSON.parse(document.getElementById('mhmdImport').dataset.checklist || '[]');
+      let importCount = 0;
+
+      gaps.forEach(gap => {
+        // Check if already imported
+        const existing = taskTable.getData().find(t => 
+          t.source_type === 'mhmd' && t.source_reference === gap.id
+        );
+        if (existing) return;
+
+        const req = MHMDA_REQUIREMENTS.find(r => r.id === gap.id);
+        if (!req) return;
+
+        const priority = gap.status === 'gap' ? 'high' : 'medium';
+        
+        taskTable.addRow({
+          source_type: 'mhmd',
+          source_reference: `${req.section}`,
+          description: `Address ${req.title}: ${req.description.substring(0, 100)}...`,
+          priority: priority,
+          status: 'open',
+          notes: gap.note || ''
+        });
+        importCount++;
+      });
+
+      updateStats();
+      saveDocumentState();
+      
+      // Visual feedback
+      const btn = document.getElementById('mhmdImportBtn');
+      btn.textContent = `✓ Imported ${importCount}`;
+      setTimeout(() => btn.textContent = 'Import Gaps', 2000);
+    }
+
+    async function importFromVulnerability() {
+      const findings = JSON.parse(document.getElementById('vulnImport').dataset.findings || '[]');
+      let importCount = 0;
+
+      findings.forEach(finding => {
+        if (finding.status === 'Remediated' || finding.status === 'Accepted Risk') return;
+        
+        // Check if already imported
+        const existing = taskTable.getData().find(t => 
+          t.source_type === 'vulnerability' && 
+          t.description.includes(finding.description.substring(0, 30))
+        );
+        if (existing) return;
+
+        // Map risk score to priority
+        const score = parseFloat(finding.risk_score) || 0;
+        let priority = 'low';
+        if (score >= 9) priority = 'critical';
+        else if (score >= 7) priority = 'high';
+        else if (score >= 4) priority = 'medium';
+
+        taskTable.addRow({
+          source_type: 'vulnerability',
+          source_reference: finding.threat_type || 'NVD/Security',
+          description: `Remediate: ${finding.description}`,
+          priority: priority,
+          status: 'open',
+          notes: `Risk score: ${finding.risk_score}. ${finding.remediation || ''}`
+        });
+        importCount++;
+      });
+
+      updateStats();
+      saveDocumentState();
+      
+      // Visual feedback
+      const btn = document.getElementById('vulnImportBtn');
+      btn.textContent = `✓ Imported ${importCount}`;
+      setTimeout(() => btn.textContent = 'Import Findings', 2000);
+    }
+
+    function updateStats() {
+      const tasks = taskTable.getData();
+      const total = tasks.length;
+      const completed = tasks.filter(t => t.status === 'completed').length;
+      const open = tasks.filter(t => ['open', 'in_progress'].includes(t.status)).length;
+      const blocked = tasks.filter(t => t.status === 'blocked').length;
+      
+      // Check overdue
+      const today = new Date().toISOString().split('T')[0];
+      const overdue = tasks.filter(t => 
+        t.due_date && t.due_date < today && t.status !== 'completed'
+      ).length;
+
+      document.getElementById('totalTasks').textContent = total;
+      document.getElementById('openTasks').textContent = open + blocked;
+      document.getElementById('completedTasks').textContent = completed;
+      document.getElementById('overdueTasks').textContent = overdue;
+
+      if (overdue > 0) {
+        document.getElementById('overdueTasks').parentElement.classList.add('has-overdue');
+      }
+
+      // Priority breakdown
+      const critical = tasks.filter(t => t.priority === 'critical').length;
+      const high = tasks.filter(t => t.priority === 'high').length;
+      const medium = tasks.filter(t => t.priority === 'medium').length;
+      const low = tasks.filter(t => t.priority === 'low').length;
+
+      if (total > 0) {
+        document.getElementById('criticalBar').style.width = `${(critical / total) * 100}%`;
+        document.getElementById('highBar').style.width = `${(high / total) * 100}%`;
+        document.getElementById('mediumBar').style.width = `${(medium / total) * 100}%`;
+        document.getElementById('lowBar').style.width = `${(low / total) * 100}%`;
+      }
+
+      document.getElementById('taskSummary').textContent = 
+        total === 0 ? 'Define specific, actionable tasks to address findings and close compliance gaps.' :
+        `${completed}/${total} tasks completed (${Math.round((completed/total)*100)}%). ${overdue > 0 ? `${overdue} overdue.` : ''}`;
+    }
+
+    async function saveDocumentState() {
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      
+      const data = {
+        tasks: taskTable.getData(),
+        implementationNotes: document.getElementById('implementationNotes').value,
+        lastSaved: new Date().toISOString(),
+        stats: {
+          total: taskTable.getData().length,
+          completed: taskTable.getData().filter(t => t.status === 'completed').length
+        }
+      };
+
+      if (documentId) {
+        await HealthDataDB.updateDocument(documentId, data);
+      } else {
+        documentId = await HealthDataDB.createDocument(engagementId, DOC_TYPE, 'Remediation Plan', data);
+      }
+
+      document.getElementById('saveStatus').textContent = 'Saved';
+      document.getElementById('lastSaved').textContent = new Date().toLocaleString();
+    }
+
+    function saveDocument() {
+      saveDocumentState().then(() => {
+        const btn = document.querySelector('.btn-primary');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Saved';
+        setTimeout(() => btn.textContent = originalText, 1500);
+      });
+    }
+
+    function scheduleAutoSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDocumentState, 1500);
+    }
+
+    function startAutoSave() {
+      document.getElementById('implementationNotes').addEventListener('input', scheduleAutoSave);
+    }
+
+    // Helper for MHMD requirements (duplicated from doc-mhmd-compliance for import reference)
+    const MHMDA_REQUIREMENTS = [
+      { id: 'sec_1', section: 'RCW 19.373.030(1)', title: 'Consumer Health Data Privacy Policy' },
+      { id: 'sec_2', section: 'RCW 19.373.030(2)', title: 'Geofencing Prohibition' },
+      { id: 'sec_3', section: 'RCW 19.373.040', title: 'Consumer Rights Process' },
+      { id: 'sec_3a', section: 'RCW 19.373.040(1)(a)', title: 'Right to Confirmation' },
+      { id: 'sec_3b', section: 'RCW 19.373.040(1)(b)', title: 'Right to Deletion' },
+      { id: 'sec_3c', section: 'RCW 19.373.040(1)(c)', title: 'Right to Withdraw Consent' },
+      { id: 'sec_3d', section: 'RCW 19.373.040(1)(d)', title: 'Right to Access' },
+      { id: 'sec_3e', section: 'RCW 19.373.040(2)', title: 'Non-Discrimination' },
+      { id: 'sec_4', section: 'RCW 19.373.050', title: 'Consent Requirements' },
+      { id: 'sec_5', section: 'RCW 19.373.060', title: 'Data Minimization' },
+      { id: 'sec_6', section: 'RCW 19.373.070', title: 'Security Safeguards' },
+      { id: 'sec_7', section: 'RCW 19.373.080', title: 'Sale and Sharing Restrictions' },
+      { id: 'sec_8', section: 'RCW 19.373.090', title: 'Service Provider Contracts' },
+      { id: 'sec_9', section: 'RCW 19.373.100', title: 'No Waiver via Contract' },
+      { id: 'sec_10', section: 'RCW 19.373.110', title: 'Civil Liability and Penalties' }
+    ];
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <style>
+    /* Import Section Styles */
+    .import-sources {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .import-card {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .import-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .import-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: #212529;
+    }
+
+    .import-count {
+      background: #e9ecef;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .import-desc {
+      font-size: 0.875rem;
+      color: #6c757d;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .import-card .btn-secondary {
+      width: 100%;
+    }
+
+    .import-card .btn-secondary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.25rem;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+
+    .stat-card .stat-value {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #495057;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      color: #6c757d;
+      text-transform: uppercase;
+    }
+
+    .stat-card.has-overdue .stat-value {
+      color: #dc3545;
+    }
+
+    /* Priority Breakdown */
+    .priority-breakdown {
+      margin-top: 1rem;
+    }
+
+    .priority-bar {
+      display: flex;
+      height: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #e9ecef;
+    }
+
+    .priority-segment {
+      transition: width 0.3s ease;
+    }
+
+    .priority-segment.critical { background: #dc3545; }
+    .priority-segment.high { background: #fd7e14; }
+    .priority-segment.medium { background: #ffc107; }
+    .priority-segment.low { background: #6c757d; }
+
+    .priority-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.critical { background: #dc3545; }
+    .legend-dot.high { background: #fd7e14; }
+    .legend-dot.medium { background: #ffc107; }
+    .legend-dot.low { background: #6c757d; }
+
+    /* Guidance Grid */
+    .guidance-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .guidance-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1rem;
+      border-left: 4px solid #6c757d;
+    }
+
+    .guidance-card.critical {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+    }
+
+    .guidance-card.high {
+      background: #fff3cd;
+      border-left-color: #ffc107;
+    }
+
+    .guidance-card.medium {
+      background: #cce5ff;
+      border-left-color: #0066cc;
+    }
+
+    .guidance-card.low {
+      background: #d4edda;
+      border-left-color: #28a745;
+    }
+
+    .guidance-card h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+    }
+
+    .guidance-card p {
+      font-size: 0.8125rem;
+      color: #495057;
+      margin-bottom: 0.75rem;
+    }
+
+    .guidance-card ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    .guidance-card li {
+      margin-bottom: 0.25rem;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .guidance-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .import-sources {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html>

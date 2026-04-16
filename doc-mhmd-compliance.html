@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document | MHMD Compliance Triage and Requirements Checklist</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="row-table-styles.css">
+</head>
+<body>
+  <div class="page">
+    <!-- Persistent Identity Header -->
+    <header class="identity-bar">
+      <div class="identity-left">
+        <span class="back-link" onclick="window.location.href='workspace.html'">← Workspace</span>
+        <span class="divider">|</span>
+        <span class="engagement-name" id="engagementName">Loading...</span>
+      </div>
+      <div class="identity-right">
+        <span class="doc-type">MHMD Compliance Checklist</span>
+      </div>
+    </header>
+
+    <main class="document-sheet">
+      <header class="doc-header">
+        <h1>MHMD Compliance Triage and Requirements Checklist</h1>
+        <p class="doc-description">Washington My Health My Data Act (RCW 19.373) applicability assessment and gap analysis.</p>
+      </header>
+
+      <!-- Applicability Engine -->
+      <section class="doc-section" id="applicabilitySection">
+        <h2>Applicability Triage</h2>
+        <p class="section-help">Answer these questions to determine if MHMDA applies to this engagement.</p>
+        
+        <div class="triage-flow">
+          <div class="triage-question" data-question="consumer_health_data">
+            <label class="question-label">
+              <span class="question-number">1</span>
+              Does the organization collect, process, or store consumer health data?
+            </label>
+            <div class="question-help">
+              Includes: symptoms, diagnoses, treatments, medications, biometric data, health-related behaviors, reproductive health data, gender-affirming care data.
+            </div>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="consumer_health_data" value="yes" onchange="updateApplicability()">
+                <span class="radio-label">Yes - We handle consumer health data</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="consumer_health_data" value="no" onchange="updateApplicability()">
+                <span class="radio-label">No - We do not handle this type of data</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="consumer_health_data" value="uncertain" onchange="updateApplicability()">
+                <span class="radio-label">Uncertain - Needs legal review</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="triage-question" data-question="washington_residents">
+            <label class="question-label">
+              <span class="question-number">2</span>
+              Do you serve Washington State residents or conduct business in Washington?
+            </label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="washington_residents" value="yes" onchange="updateApplicability()">
+                <span class="radio-label">Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="washington_residents" value="no" onchange="updateApplicability()">
+                <span class="radio-label">No</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="washington_residents" value="planning" onchange="updateApplicability()">
+                <span class="radio-label">Planning to expand to WA</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="triage-question" data-question="entity_type">
+            <label class="question-label">
+              <span class="question-number">3</span>
+              Organization Type
+            </label>
+            <div class="question-help">
+              Select the category that best describes this organization.
+            </div>
+            <select class="form-select" id="entityType" onchange="updateApplicability()">
+              <option value="">-- Select organization type --</option>
+              <option value="medical_practice">Medical Practice / Clinic</option>
+              <option value="wellness_center">Wellness/Fitness Center</option>
+              <option value="alternative_medicine">Alternative Medicine Provider</option>
+              <option value="health_app">Health/Fitness Mobile App</option>
+              <option value="pharmacy">Pharmacy / Dispensary</option>
+              <option value="employer">Employer collecting health data</option>
+              <option value="vendor">Health-adjacent Vendor/SaaS</option>
+              <option value="nonprofit">Health Nonprofit / Education</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="triage-question" data-question="regulated_entity">
+            <label class="question-label">
+              <span class="question-number">4</span>
+              Are you a "regulated entity" under MHMDA?
+            </label>
+            <div class="question-help">
+              A regulated entity is any legal entity that conducts business in WA or provides products/services targeted to WA residents and determines the purpose and means of collecting/processing consumer health data (excludes government agencies, tribal organizations, B2B processors acting as agents).
+            </div>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="regulated_entity" value="yes" onchange="updateApplicability()">
+                <span class="radio-label">Yes - We determine how data is collected and used</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="regulated_entity" value="no_processor" onchange="updateApplicability()">
+                <span class="radio-label">No - We are a processor/agent for another entity</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="regulated_entity" value="uncertain" onchange="updateApplicability()">
+                <span class="radio-label">Uncertain - Needs legal review</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Applicability Result -->
+        <div class="applicability-result" id="applicabilityResult">
+          <div class="result-badge pending">
+            <span class="result-icon">⏳</span>
+            <span class="result-text">Complete all triage questions to see applicability</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Determination Summary -->
+      <section class="doc-section" id="determinationSection" style="display: none;">
+        <h2>MHMDA Applicability Determination</h2>
+        
+        <div class="determination-card" id="determinationCard">
+          <div class="determination-status" id="determinationStatus">
+            <span class="status-badge">Assessment Pending</span>
+          </div>
+          
+          <div class="determination-rationale" id="determinationRationale">
+            Complete the triage questions above to generate the determination.
+          </div>
+
+          <div class="determination-actions" id="determinationActions">
+            <!-- Dynamic based on result -->
+          </div>
+        </div>
+
+        <!-- Effective Date Notice -->
+        <div class="effective-date-notice" id="effectiveDateNotice">
+          <strong>Important:</strong> As of the March 31, 2024 effective date, regulated entities must comply with RCW 19.373 requirements. Penalties include statutory damages and private right of action.
+        </div>
+      </section>
+
+      <!-- Compliance Checklist -->
+      <section class="doc-section" id="checklistSection" style="display: none;">
+        <header class="section-header-with-actions">
+          <h2>Compliance Requirements Checklist</h2>
+          <div class="checklist-stats" id="checklistStats">
+            <span class="stat">
+              <span class="stat-value" id="completedCount">0</span>
+              <span class="stat-label">Completed</span>
+            </span>
+            <span class="stat">
+              <span class="stat-value" id="gapCount">0</span>
+              <span class="stat-label">Gaps</span>
+            </span>
+            <span class="stat">
+              <span class="stat-value" id="completenessPercent">0%</span>
+              <span class="stat-label">Complete</span>
+            </span>
+          </div>
+        </header>
+
+        <div class="checklist-container" id="checklistContainer">
+          <!-- Checklist items generated by JS -->
+        </div>
+      </section>
+
+      <!-- Gap Analysis Summary -->
+      <section class="doc-section" id="gapSection" style="display: none;">
+        <h2>Gap Analysis Summary</h2>
+        <div class="gap-summary" id="gapSummary">
+          <p class="no-gaps-message">Complete the checklist to identify compliance gaps.</p>
+        </div>
+      </section>
+
+      <!-- Notes and Next Steps -->
+      <section class="doc-section">
+        <h2>Consultant Notes</h2>
+        <textarea class="form-textarea" id="consultantNotes" rows="5" placeholder="Document key findings, client discussions, legal questions raised..."></textarea>
+        
+        <h3 style="margin-top: 1.5rem;">Next Steps</h3>
+        <textarea class="form-textarea" id="nextSteps" rows="3" placeholder="e.g., Schedule legal review for applicability questions, update privacy policy, implement geofencing..."></textarea>
+      </section>
+
+      <!-- Document Footer -->
+      <footer class="doc-footer">
+        <div class="save-status">
+          <span id="saveStatus">Saved</span>
+          <span class="last-saved" id="lastSaved"></span>
+        </div>
+        <div class="doc-actions">
+          <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+          <button class="btn-primary" onclick="saveDocument()">Save Document</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data-model.js"></script>
+  <script>
+    // Document state
+    const DOC_TYPE = 'mhmd-compliance';
+    let engagementId = null;
+    let documentId = null;
+    let checklistData = [];
+    let autoSaveTimer = null;
+
+    // RCW 19.373 Requirements
+    const MHMDA_REQUIREMENTS = [
+      {
+        id: 'sec_1',
+        section: 'RCW 19.373.030(1)',
+        title: 'Consumer Health Data Privacy Policy',
+        description: 'Publish and maintain a privacy policy specifically for consumer health data, accessible from homepage/footer.',
+        required: true,
+        guidance: 'Must be separate from general privacy policy or clearly demarcated section.',
+        evidence: 'privacy_policy_published'
+      },
+      {
+        id: 'sec_2',
+        section: 'RCW 19.373.030(2)',
+        title: 'Geofencing Prohibition',
+        description: 'Ensure no geofencing around facilities providing in-person health care services for identifying/processing consumer health data.',
+        required: true,
+        guidance: 'Applies to location tracking within 2,000 feet of medical clinics, hospitals, mental health facilities.',
+        evidence: 'geofence_audit'
+      },
+      {
+        id: 'sec_3',
+        section: 'RCW 19.373.040',
+        title: 'Consumer Rights Process',
+        description: 'Implement process for consumers to exercise rights: confirm processing, delete data, withdraw consent, access data, non-discrimination.',
+        required: true,
+        guidance: 'Must respond within 45 days. Keep records of all requests and responses.',
+        evidence: 'rights_process_documented'
+      },
+      {
+        id: 'sec_3a',
+        section: 'RCW 19.373.040(1)(a)',
+        title: 'Right to Confirmation',
+        description: 'Consumers can confirm whether you process their health data.',
+        required: true,
+        guidance: '',
+        evidence: null
+      },
+      {
+        id: 'sec_3b',
+        section: 'RCW 19.373.040(1)(b)',
+        title: 'Right to Deletion',
+        description: 'Consumers can request deletion of their health data with limited exceptions.',
+        required: true,
+        guidance: 'Exceptions: data required by law, necessary for prevention/detection of security incidents, to debug/verify functionality.',
+        evidence: null
+      },
+      {
+        id: 'sec_3c',
+        section: 'RCW 19.373.040(1)(c)',
+        title: 'Right to Withdraw Consent',
+        description: 'Consumers can withdraw consent to collect/share health data.',
+        required: true,
+        guidance: 'Must honor withdrawal promptly. Document consent history.',
+        evidence: 'consent_withdrawal_process'
+      },
+      {
+        id: 'sec_3d',
+        section: 'RCW 19.373.040(1)(d)',
+        title: 'Right to Access',
+        description: 'Consumers can request a copy of their health data in a standard electronic format.',
+        required: true,
+        guidance: 'Within 45 days. Consider providing in human-readable format with explanation.',
+        evidence: 'access_request_process'
+      },
+      {
+        id: 'sec_3e',
+        section: 'RCW 19.373.040(2)',
+        title: 'Non-Discrimination',
+        description: 'No discriminatory treatment for exercising consumer rights.',
+        required: true,
+        guidance: 'Cannot charge different prices or provide different service quality.',
+        evidence: null
+      },
+      {
+        id: 'sec_4',
+        section: 'RCW 19.373.050',
+        title: 'Consent Requirements',
+        description: 'Obtain affirmative, opt-in consent before collecting/sharing consumer health data.',
+        required: true,
+        guidance: 'Consent must be separate from terms of service. Must disclose: categories collected, purpose, third parties, how to withdraw.',
+        evidence: 'consent_mechanism'
+      },
+      {
+        id: 'sec_5',
+        section: 'RCW 19.373.060',
+        title: 'Data Minimization',
+        description: 'Collect only health data reasonably necessary for the specific disclosed purpose.',
+        required: true,
+        guidance: 'Review data collection practices. Implement technical controls to limit collection.',
+        evidence: 'data_minimization_review'
+      },
+      {
+        id: 'sec_6',
+        section: 'RCW 19.373.070',
+        title: 'Security Safeguards',
+        description: 'Implement administrative, technical, and physical safeguards appropriate to data sensitivity.',
+        required: true,
+        guidance: 'Consider encryption, access controls, audit logging, staff training, incident response.',
+        evidence: 'security_assessment'
+      },
+      {
+        id: 'sec_7',
+        section: 'RCW 19.373.080',
+        title: 'Sale and Sharing Restrictions',
+        description: 'Prohibit sale of consumer health data without separate, specific authorization.',
+        required: true,
+        guidance: 'Authorization must specifically state "SELL" if applicable. Valid for one year.',
+        evidence: 'no_sale_policy'
+      },
+      {
+        id: 'sec_8',
+        section: 'RCW 19.373.090',
+        title: 'Service Provider Contracts',
+        description: 'Bind service providers to data use restrictions through written contracts.',
+        required: true,
+        guidance: 'Contracts must specify processing terms, data deletion obligations, security requirements.',
+        evidence: 'provider_contracts'
+      },
+      {
+        id: 'sec_9',
+        section: 'RCW 19.373.100',
+        title: 'No Waiver via Contract',
+        description: 'Ensure terms of service do not waive consumer rights under MHMDA.',
+        required: true,
+        guidance: 'Review and revise TOS, privacy policies, clickwrap agreements.',
+        evidence: 'tos_review'
+      },
+      {
+        id: 'sec_10',
+        section: 'RCW 19.373.110',
+        title: 'Civil Liability and Penalties',
+        description: 'Understand exposure: private right of action, statutory damages, attorney fees.',
+        required: false,
+        guidance: 'This is informational - risk assessment item.',
+        evidence: null
+      }
+    ];
+
+    // Initialize
+    async function init() {
+      await loadEngagement();
+      await loadOrCreateDocument();
+      renderChecklist();
+      startAutoSave();
+    }
+
+    async function loadEngagement() {
+      const params = new URLSearchParams(window.location.search);
+      engagementId = params.get('engagement');
+      
+      if (!engagementId) {
+        window.location.href = 'engagement.html';
+        return;
+      }
+
+      const engagement = await HealthDataDB.getEngagement(engagementId);
+      if (engagement) {
+        document.getElementById('engagementName').textContent = engagement.engagementName;
+      }
+    }
+
+    async function loadOrCreateDocument() {
+      const docs = await HealthDataDB.getDocuments(engagementId, DOC_TYPE);
+      
+      if (docs.length > 0) {
+        documentId = docs[0].id;
+        const data = docs[0].data || {};
+        
+        // Restore triage answers
+        if (data.triage) {
+          Object.entries(data.triage).forEach(([key, value]) => {
+            const input = document.querySelector(`[name="${key}"][value="${value}"]`);
+            if (input) input.checked = true;
+            const select = document.getElementById(key === 'entity_type' ? 'entityType' : '');
+            if (select && key === 'entity_type') select.value = value;
+          });
+          updateApplicability(false);
+        }
+        
+        // Restore checklist
+        if (data.checklist) {
+          checklistData = data.checklist;
+        }
+        
+        // Restore notes
+        if (data.consultantNotes) {
+          document.getElementById('consultantNotes').value = data.consultantNotes;
+        }
+        if (data.nextSteps) {
+          document.getElementById('nextSteps').value = data.nextSteps;
+        }
+        
+        if (data.lastSaved) {
+          document.getElementById('lastSaved').textContent = new Date(data.lastSaved).toLocaleString();
+        }
+      } else {
+        // Initialize empty checklist
+        checklistData = MHMDA_REQUIREMENTS.map(req => ({
+          id: req.id,
+          status: 'not_assessed',
+          note: '',
+          evidence_ref: ''
+        }));
+      }
+    }
+
+    function updateApplicability(save = true) {
+      const triage = {
+        consumer_health_data: document.querySelector('input[name="consumer_health_data"]:checked')?.value,
+        washington_residents: document.querySelector('input[name="washington_residents"]:checked')?.value,
+        entity_type: document.getElementById('entityType').value,
+        regulated_entity: document.querySelector('input[name="regulated_entity"]:checked')?.value
+      };
+
+      const answeredCount = Object.values(triage).filter(v => v && v !== '').length;
+      const totalQuestions = 4;
+
+      const resultEl = document.getElementById('applicabilityResult');
+      const determinationSection = document.getElementById('determinationSection');
+      const checklistSection = document.getElementById('checklistSection');
+
+      if (answeredCount < totalQuestions) {
+        resultEl.innerHTML = `
+          <div class="result-badge pending">
+            <span class="result-icon">⏳</span>
+            <span class="result-text">${answeredCount}/${totalQuestions} questions answered</span>
+          </div>
+        `;
+        determinationSection.style.display = 'none';
+        checklistSection.style.display = 'none';
+      } else {
+        determinationSection.style.display = 'block';
+        checklistSection.style.display = 'block';
+        generateDetermination(triage);
+      }
+
+      if (save) {
+        saveDocumentState();
+      }
+    }
+
+    function generateDetermination(triage) {
+      let applies = false;
+      let status = '';
+      let rationale = '';
+      let actions = '';
+
+      if (triage.consumer_health_data === 'no') {
+        status = 'NOT_APPLICABLE';
+        rationale = 'MHMDA does not appear to apply because the organization does not collect consumer health data. This is the primary threshold requirement under RCW 19.373.010(3).';
+        actions = '<p>Document this determination. Monitor for changes in business model that may involve health data collection.</p>';
+      } else if (triage.washington_residents === 'no') {
+        status = 'NOT_APPLICABLE';
+        rationale = 'MHMDA only applies to organizations conducting business in Washington or targeting products/services to Washington residents. Geographic nexus not established.';
+        actions = '<p>If expansion to Washington is planned, re-evaluate 60 days before launch. Consider proactive compliance if neighboring states may adopt similar laws.</p>';
+      } else if (triage.regulated_entity === 'no_processor') {
+        status = 'PROCESSOR';
+        rationale = 'This organization appears to be a service provider/processor acting on behalf of another regulated entity. While not directly subject to all MHMDA requirements, data handling obligations flow through the regulated entity contract under RCW 19.373.090.';
+        actions = `
+          <ul>
+            <li>Review and ensure compliant service provider contract with regulated entity</li>
+            <li>Document role as processor vs. regulated entity</li>
+            <li>Implement processing restrictions per contract</li>
+            <li>Maintain processing records for regulated entity audits</li>
+          </ul>
+        `;
+      } else if (triage.consumer_health_data === 'uncertain' || triage.regulated_entity === 'uncertain') {
+        status = 'REQUIRES_LEGAL_REVIEW';
+        rationale = 'Applicability cannot be determined without legal review. The organization should engage Washington-qualified privacy counsel before processing any consumer health data.';
+        actions = '<p><strong>Action Required:</strong> Engage legal counsel specializing in Washington privacy law. Do not begin health data collection until applicability is confirmed.</p>';
+      } else {
+        applies = true;
+        status = 'APPLIES';
+        rationale = `This ${getEntityTypeLabel(triage.entity_type)} collects consumer health data and conducts business in Washington State. As a regulated entity under RCW 19.373.010(4), it is subject to the full requirements of the My Health My Data Act effective March 31, 2024.`;
+        actions = '<p><strong>Action Required:</strong> Complete the compliance checklist below and address all gaps. This is a legal compliance requirement with private right of action and statutory damages.</p>';
+      }
+
+      const cardEl = document.getElementById('determinationCard');
+      const statusEl = document.getElementById('determinationStatus');
+      const rationaleEl = document.getElementById('determinationRationale');
+      const actionsEl = document.getElementById('determinationActions');
+
+      cardEl.className = 'determination-card ' + status.toLowerCase().replace(/_/g, '-');
+      
+      const statusLabels = {
+        'NOT_APPLICABLE': { text: 'MHMDA Does Not Apply', class: 'not-applicable' },
+        'PROCESSOR': { text: 'Service Provider / Processor Status', class: 'processor' },
+        'REQUIRES_LEGAL_REVIEW': { text: 'Legal Review Required', class: 'legal-review' },
+        'APPLIES': { text: 'MHMDA APPLIES - Compliance Required', class: 'applies' }
+      };
+
+      const statusInfo = statusLabels[status];
+      statusEl.innerHTML = `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+      rationaleEl.textContent = rationale;
+      actionsEl.innerHTML = actions;
+
+      // Show gap section if applicable
+      if (applies) {
+        document.getElementById('gapSection').style.display = 'block';
+      }
+    }
+
+    function getEntityTypeLabel(value) {
+      const labels = {
+        'medical_practice': 'medical practice',
+        'wellness_center': 'wellness center',
+        'alternative_medicine': 'alternative medicine provider',
+        'health_app': 'health application company',
+        'pharmacy': 'pharmacy',
+        'employer': 'employer',
+        'vendor': 'health-adjacent vendor',
+        'nonprofit': 'health nonprofit',
+        'other': 'organization'
+      };
+      return labels[value] || 'organization';
+    }
+
+    function renderChecklist() {
+      const container = document.getElementById('checklistContainer');
+      
+      container.innerHTML = MHMDA_REQUIREMENTS.map((req, index) => {
+        const item = checklistData.find(c => c.id === req.id) || { status: 'not_assessed', note: '' };
+        
+        return `
+          <div class="checklist-item ${item.status}" data-id="${req.id}">
+            <div class="checklist-header">
+              <div class="checklist-number">${index + 1}</div>
+              <div class="checklist-info">
+                <div class="checklist-title">${req.title}</div>
+                <div class="checklist-section">${req.section}${req.required ? '' : ' <span class="badge-info">Informational</span>'}</div>
+              </div>
+              <div class="checklist-status">
+                <select class="status-select" onchange="updateChecklistItem('${req.id}', 'status', this.value)">
+                  <option value="not_assessed" ${item.status === 'not_assessed' ? 'selected' : ''}>Not Assessed</option>
+                  <option value="compliant" ${item.status === 'compliant' ? 'selected' : ''}>✓ Compliant</option>
+                  <option value="partial" ${item.status === 'partial' ? 'selected' : ''}>~ Partial</option>
+                  <option value="gap" ${item.status === 'gap' ? 'selected' : ''}>✗ Gap</option>
+                  <option value="na" ${item.status === 'na' ? 'selected' : ''}>N/A</option>
+                </select>
+              </div>
+            </div>
+            <div class="checklist-body">
+              <p class="checklist-description">${req.description}</p>
+              ${req.guidance ? `<div class="checklist-guidance"><strong>Guidance:</strong> ${req.guidance}</div>` : ''}
+              <div class="checklist-details">
+                <label class="details-label">
+                  Evidence / Reference:
+                  <input type="text" class="form-input" value="${item.evidence_ref || ''}" 
+                         placeholder="e.g., Privacy Policy v2.1, Security Assessment Report"
+                         onchange="updateChecklistItem('${req.id}', 'evidence_ref', this.value)">
+                </label>
+                <label class="details-label">
+                  Notes:
+                  <input type="text" class="form-input" value="${item.note || ''}"
+                         placeholder="Implementation details, timeline, responsible party..."
+                         onchange="updateChecklistItem('${req.id}', 'note', this.value)">
+                </label>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      updateStats();
+    }
+
+    function updateChecklistItem(id, field, value) {
+      const item = checklistData.find(c => c.id === id);
+      if (item) {
+        item[field] = value;
+        if (field === 'status') {
+          // Update class for styling
+          const itemEl = document.querySelector(`.checklist-item[data-id="${id}"]`);
+          if (itemEl) {
+            itemEl.className = `checklist-item ${value}`;
+          }
+        }
+        updateStats();
+        updateGapSummary();
+        saveDocumentState();
+      }
+    }
+
+    function updateStats() {
+      const total = checklistData.length;
+      const compliant = checklistData.filter(c => c.status === 'compliant').length;
+      const gaps = checklistData.filter(c => c.status === 'gap').length;
+      const partial = checklistData.filter(c => c.status === 'partial').length;
+      const assessed = compliant + gaps + partial + checklistData.filter(c => c.status === 'na').length;
+      
+      const requiredItems = MHMDA_REQUIREMENTS.filter(r => r.required);
+      const requiredCompliant = requiredItems.filter(r => {
+        const item = checklistData.find(c => c.id === r.id);
+        return item && item.status === 'compliant';
+      }).length;
+      
+      document.getElementById('completedCount').textContent = compliant;
+      document.getElementById('gapCount').textContent = gaps;
+      document.getElementById('completenessPercent').textContent = 
+        total > 0 ? Math.round((assessed / total) * 100) + '%' : '0%';
+    }
+
+    function updateGapSummary() {
+      const gaps = MHMDA_REQUIREMENTS.filter(req => {
+        const item = checklistData.find(c => c.id === req.id);
+        return item && (item.status === 'gap' || item.status === 'partial');
+      });
+
+      const container = document.getElementById('gapSummary');
+      
+      if (gaps.length === 0) {
+        container.innerHTML = `
+          <div class="gap-success">
+            <span class="success-icon">✓</span>
+            <p>No compliance gaps identified. All assessed requirements are compliant or N/A.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="gap-alert">
+          <div class="alert-header">
+            <span class="alert-icon">⚠️</span>
+            <span class="alert-count">${gaps.length} gap${gaps.length > 1 ? 's' : ''} identified requiring remediation</span>
+          </div>
+          <ul class="gap-list">
+            ${gaps.map(gap => {
+              const item = checklistData.find(c => c.id === gap.id);
+              return `
+                <li class="gap-item">
+                  <span class="gap-section">${gap.section}</span>
+                  <span class="gap-title">${gap.title}</span>
+                  ${item?.note ? `<span class="gap-note">${item.note}</span>` : ''}
+                </li>
+              `;
+            }).join('')}
+          </ul>
+          <p class="gap-action-hint">
+            Export gaps to Remediation Plan after completing this checklist.
+          </p>
+        </div>
+      `;
+    }
+
+    async function saveDocumentState() {
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      
+      const triage = {
+        consumer_health_data: document.querySelector('input[name="consumer_health_data"]:checked')?.value,
+        washington_residents: document.querySelector('input[name="washington_residents"]:checked')?.value,
+        entity_type: document.getElementById('entityType').value,
+        regulated_entity: document.querySelector('input[name="regulated_entity"]:checked')?.value
+      };
+
+      const data = {
+        triage,
+        checklist: checklistData,
+        consultantNotes: document.getElementById('consultantNotes').value,
+        nextSteps: document.getElementById('nextSteps').value,
+        lastSaved: new Date().toISOString(),
+        completionScore: calculateCompletionScore()
+      };
+
+      if (documentId) {
+        await HealthDataDB.updateDocument(documentId, data);
+      } else {
+        documentId = await HealthDataDB.createDocument(engagementId, DOC_TYPE, 'MHMD Compliance Checklist', data);
+      }
+
+      document.getElementById('saveStatus').textContent = 'Saved';
+      document.getElementById('lastSaved').textContent = new Date().toLocaleString();
+    }
+
+    function calculateCompletionScore() {
+      const requiredItems = MHMDA_REQUIREMENTS.filter(r => r.required);
+      const compliant = requiredItems.filter(r => {
+        const item = checklistData.find(c => c.id === r.id);
+        return item && item.status === 'compliant';
+      }).length;
+      return {
+        total: requiredItems.length,
+        compliant: compliant,
+        percent: Math.round((compliant / requiredItems.length) * 100)
+      };
+    }
+
+    function saveDocument() {
+      saveDocumentState().then(() => {
+        // Visual feedback
+        const btn = document.querySelector('.btn-primary');
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Saved';
+        setTimeout(() => btn.textContent = originalText, 1500);
+      });
+    }
+
+    function startAutoSave() {
+      // Auto-save on input changes
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        el.addEventListener('change', () => {
+          clearTimeout(autoSaveTimer);
+          autoSaveTimer = setTimeout(saveDocumentState, 1000);
+        });
+      });
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <style>
+    /* Triage Flow Styles */
+    .triage-flow {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .triage-question {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .triage-question:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .question-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #212529;
+      margin-bottom: 0.5rem;
+    }
+
+    .question-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #495057;
+      color: white;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .question-help {
+      margin-left: 2rem;
+      font-size: 0.875rem;
+      color: #6c757d;
+      margin-bottom: 0.75rem;
+    }
+
+    .radio-group {
+      margin-left: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .radio-option:hover {
+      background: #e9ecef;
+    }
+
+    .radio-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #495057;
+    }
+
+    .form-select {
+      margin-left: 2rem;
+      padding: 0.5rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      min-width: 300px;
+    }
+
+    /* Applicability Result */
+    .applicability-result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .result-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .result-badge.pending {
+      background: #fff3cd;
+      color: #856404;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .result-icon {
+      font-size: 1.5rem;
+    }
+
+    /* Determination Card */
+    .determination-card {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid #6c757d;
+    }
+
+    .determination-card.applies {
+      background: #f8d7da;
+      border-left-color: #dc3545;
+    }
+
+    .determination-card.not-applicable {
+      background: #d1ecf1;
+      border-left-color: #0c5460;
+    }
+
+    .determination-card.processor {
+      background: #fff3cd;
+      border-left-color: #856404;
+    }
+
+    .determination-card.legal-review {
+      background: #ffe5cc;
+      border-left-color: #fd7e14;
+    }
+
+    .determination-status {
+      margin-bottom: 1rem;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .status-badge.applies {
+      background: #dc3545;
+      color: white;
+    }
+
+    .status-badge.not-applicable {
+      background: #0c5460;
+      color: white;
+    }
+
+    .status-badge.processor {
+      background: #856404;
+      color: white;
+    }
+
+    .status-badge.legal-review {
+      background: #fd7e14;
+      color: white;
+    }
+
+    .determination-rationale {
+      color: #212529;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .determination-actions ul {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .determination-actions li {
+      margin-bottom: 0.25rem;
+    }
+
+    .effective-date-notice {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #d1ecf1;
+      border-left: 4px solid #17a2b8;
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+
+    /* Checklist Styles */
+    .section-header-with-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .checklist-stats {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #495057;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: #6c757d;
+      text-transform: uppercase;
+    }
+
+    .checklist-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .checklist-item {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .checklist-item.compliant {
+      border-left: 4px solid #198754;
+    }
+
+    .checklist-item.gap {
+      border-left: 4px solid #dc3545;
+    }
+
+    .checklist-item.partial {
+      border-left: 4px solid #ffc107;
+    }
+
+    .checklist-item.na {
+      opacity: 0.7;
+    }
+
+    .checklist-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+    }
+
+    .checklist-number {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #495057;
+      color: white;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .checklist-info {
+      flex: 1;
+    }
+
+    .checklist-title {
+      font-weight: 600;
+      color: #212529;
+    }
+
+    .checklist-section {
+      font-size: 0.75rem;
+      color: #6c757d;
+      margin-top: 0.25rem;
+    }
+
+    .status-select {
+      padding: 0.5rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      background: white;
+      min-width: 130px;
+    }
+
+    .checklist-body {
+      padding: 1rem;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .checklist-description {
+      margin-bottom: 0.75rem;
+      color: #495057;
+    }
+
+    .checklist-guidance {
+      background: #e9ecef;
+      padding: 0.75rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      color: #495057;
+      margin-bottom: 0.75rem;
+    }
+
+    .checklist-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .details-label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.8125rem;
+      color: #6c757d;
+    }
+
+    .badge-info {
+      background: #0dcaf0;
+      color: #000;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    /* Gap Summary */
+    .gap-success {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #d1e7dd;
+      border-radius: 8px;
+      color: #0f5132;
+    }
+
+    .success-icon {
+      font-size: 1.5rem;
+    }
+
+    .gap-alert {
+      background: #f8d7da;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: #842029;
+    }
+
+    .gap-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .gap-item {
+      display: flex;
+      flex-direction: column;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.5);
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+
+    .gap-section {
+      font-size: 0.75rem;
+      color: #842029;
+      font-weight: 600;
+    }
+
+    .gap-title {
+      font-weight: 500;
+      color: #212529;
+    }
+
+    .gap-note {
+      font-size: 0.875rem;
+      color: #6c757d;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    .gap-action-hint {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: #842029;
+    }
+  </style>
+</body>
+</html>
