@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document | Staff Awareness & Training</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="row-table-styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="identity-bar">
+      <div class="identity-left">
+        <span class="back-link" onclick="window.location.href='workspace.html'">← Workspace</span>
+        <span class="divider">|</span>
+        <span class="engagement-name" id="engagementName">Loading...</span>
+      </div>
+      <div class="identity-right">
+        <span class="doc-type">Staff Awareness</span>
+      </div>
+    </header>
+
+    <main class="document-sheet">
+      <header class="doc-header">
+        <h1>Staff Awareness & Acknowledgments</h1>
+        <p class="doc-description">Track workforce training completion and policy acknowledgment coverage.</p>
+      </header>
+
+      <section class="doc-section">
+        <div class="form-grid">
+          <label class="form-label">Training Owner
+            <input id="trainingOwner" class="form-input" placeholder="Security or compliance lead" />
+          </label>
+          <label class="form-label">Cycle Period
+            <select id="cyclePeriod" class="form-input">
+              <option value="">-- Select --</option>
+              <option value="annual">Annual</option>
+              <option value="semiannual">Semi-Annual</option>
+              <option value="quarterly">Quarterly</option>
+            </select>
+          </label>
+          <label class="form-label">Last Program Review
+            <input id="lastReview" type="date" class="form-input" />
+          </label>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Training Roster</h2>
+            <p class="section-help">One row per staff member/contractor handling health or sensitive data.</p>
+          </div>
+          <button class="btn-primary" onclick="rosterTable.addRow()">+ Add Person</button>
+        </header>
+        <div id="rosterTableContainer"></div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Policy Acknowledgment Coverage</h2>
+        <div class="policy-grid">
+          <label class="policy-item"><input type="checkbox" data-policy="privacy" /> Privacy Policy</label>
+          <label class="policy-item"><input type="checkbox" data-policy="incident" /> Incident Response Policy</label>
+          <label class="policy-item"><input type="checkbox" data-policy="access" /> Access Control Policy</label>
+          <label class="policy-item"><input type="checkbox" data-policy="acceptable-use" /> Acceptable Use Policy</label>
+          <label class="policy-item"><input type="checkbox" data-policy="vendor" /> Vendor/Data Sharing Policy</label>
+          <label class="policy-item"><input type="checkbox" data-policy="retention" /> Retention & Deletion Policy</label>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Coverage Snapshot</h2>
+        <div class="stats-grid">
+          <div class="stat-card"><span class="stat-value" id="totalPeople">0</span><span class="stat-label">People</span></div>
+          <div class="stat-card"><span class="stat-value" id="trainedPeople">0</span><span class="stat-label">Training Complete</span></div>
+          <div class="stat-card"><span class="stat-value" id="overduePeople">0</span><span class="stat-label">Overdue</span></div>
+          <div class="stat-card"><span class="stat-value" id="ackPercent">0%</span><span class="stat-label">Policy Coverage</span></div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Notes</h2>
+        <textarea id="notes" class="form-textarea" rows="4" placeholder="Role-specific exceptions, contractor schedule, onboarding gaps..."></textarea>
+      </section>
+
+      <footer class="doc-footer">
+        <div class="save-status">
+          <span id="saveStatus">Saved</span>
+          <span class="last-saved" id="lastSaved"></span>
+        </div>
+        <div class="doc-actions">
+          <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+          <button class="btn-primary" onclick="saveDocument()">Save Document</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script src="data-model.js"></script>
+  <script src="row-table-engine.js"></script>
+  <script>
+    const DOC_TYPE = 'staff-awareness';
+    let engagementId = null;
+    let documentId = null;
+    let autoSaveTimer = null;
+    let rosterTable = null;
+
+    const rosterColumns = [
+      { key: 'name', header: 'Name', type: 'text', width: '180px', required: true, placeholder: 'Full name' },
+      { key: 'role', header: 'Role', type: 'text', width: '150px', placeholder: 'Nurse, Admin, Engineer' },
+      { key: 'employment_type', header: 'Type', type: 'select', width: '120px', options: [
+        { value: 'employee', label: 'Employee' }, { value: 'contractor', label: 'Contractor' }
+      ] },
+      { key: 'last_training', header: 'Last Training', type: 'date', width: '120px' },
+      { key: 'training_status', header: 'Training Status', type: 'select', width: '130px', options: [
+        { value: 'complete', label: 'Complete' }, { value: 'pending', label: 'Pending' }, { value: 'overdue', label: 'Overdue' }
+      ] },
+      { key: 'ack_status', header: 'Policy Ack', type: 'select', width: '120px', options: [
+        { value: 'complete', label: 'Complete' }, { value: 'partial', label: 'Partial' }, { value: 'missing', label: 'Missing' }
+      ] },
+      { key: 'next_due', header: 'Next Due', type: 'date', width: '120px' }
+    ];
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      engagementId = params.get('engagement');
+      if (!engagementId) return window.location.href = 'engagement.html';
+
+      const engagement = await HealthDataDB.getEngagement(engagementId);
+      if (engagement) document.getElementById('engagementName').textContent = engagement.engagementName;
+
+      rosterTable = new RowTableEngine('rosterTableContainer', rosterColumns, { onChange: onChange });
+
+      await loadOrCreate();
+      bindInputs();
+      updateStats();
+    }
+
+    async function loadOrCreate() {
+      const docs = await HealthDataDB.getDocuments(engagementId, DOC_TYPE);
+      if (!docs.length) return;
+      documentId = docs[0].id;
+      const data = docs[0].data || {};
+
+      document.getElementById('trainingOwner').value = data.trainingOwner || '';
+      document.getElementById('cyclePeriod').value = data.cyclePeriod || '';
+      document.getElementById('lastReview').value = data.lastReview || '';
+      (data.roster || []).forEach(r => rosterTable.addRow(r));
+      (data.policies || []).forEach(p => {
+        const cb = document.querySelector(`input[data-policy="${p}"]`);
+        if (cb) cb.checked = true;
+      });
+      if (data.notes) document.getElementById('notes').value = data.notes;
+      if (data.lastSaved) document.getElementById('lastSaved').textContent = new Date(data.lastSaved).toLocaleString();
+    }
+
+    function bindInputs() {
+      ['trainingOwner', 'cyclePeriod', 'lastReview', 'notes'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', scheduleSave);
+        el.addEventListener('change', scheduleSave);
+      });
+      document.querySelectorAll('input[data-policy]').forEach(cb => cb.addEventListener('change', scheduleSave));
+    }
+
+    function onChange() { updateStats(); scheduleSave(); }
+
+    function updateStats() {
+      const rows = rosterTable.getData();
+      const total = rows.length;
+      const trained = rows.filter(r => r.training_status === 'complete').length;
+      const overdue = rows.filter(r => r.training_status === 'overdue').length;
+      const ack = rows.filter(r => r.ack_status === 'complete').length;
+
+      document.getElementById('totalPeople').textContent = total;
+      document.getElementById('trainedPeople').textContent = trained;
+      document.getElementById('overduePeople').textContent = overdue;
+      document.getElementById('ackPercent').textContent = total ? `${Math.round((ack/total)*100)}%` : '0%';
+    }
+
+    function scheduleSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDocumentState, 1200);
+    }
+
+    async function saveDocumentState() {
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      const policies = Array.from(document.querySelectorAll('input[data-policy]:checked')).map(cb => cb.dataset.policy);
+      const data = {
+        trainingOwner: document.getElementById('trainingOwner').value,
+        cyclePeriod: document.getElementById('cyclePeriod').value,
+        lastReview: document.getElementById('lastReview').value,
+        roster: rosterTable.getData(),
+        policies,
+        notes: document.getElementById('notes').value,
+        lastSaved: new Date().toISOString()
+      };
+
+      if (documentId) await HealthDataDB.updateDocument(documentId, data);
+      else documentId = await HealthDataDB.createDocument(engagementId, DOC_TYPE, 'Staff Awareness', data);
+
+      document.getElementById('saveStatus').textContent = 'Saved';
+      document.getElementById('lastSaved').textContent = new Date().toLocaleString();
+    }
+
+    function saveDocument() { saveDocumentState(); }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <style>
+    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .form-label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; color: #495057; }
+    .form-input { padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px; }
+    .policy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .policy-item { display: flex; gap: 0.5rem; align-items: center; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 0.7rem; font-size: 0.85rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .stat-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; text-align: center; }
+    .stat-value { display: block; font-size: 1.6rem; font-weight: 700; color: #495057; }
+    .stat-label { font-size: 0.72rem; text-transform: uppercase; color: #6c757d; }
+    @media (max-width: 768px) {
+      .form-grid, .policy-grid, .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</body>
+</html>

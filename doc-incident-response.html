@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document | Incident Response Log</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="row-table-styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="identity-bar">
+      <div class="identity-left">
+        <span class="back-link" onclick="window.location.href='workspace.html'">← Workspace</span>
+        <span class="divider">|</span>
+        <span class="engagement-name" id="engagementName">Loading...</span>
+      </div>
+      <div class="identity-right">
+        <span class="doc-type">Incident Response Log</span>
+      </div>
+    </header>
+
+    <main class="document-sheet">
+      <header class="doc-header">
+        <h1>Incident Response Log</h1>
+        <p class="doc-description">Track security/privacy incidents, response actions, and notification obligations.</p>
+      </header>
+
+      <section class="doc-section">
+        <h2>Response Contacts</h2>
+        <div class="form-grid">
+          <label class="form-label">Incident Commander
+            <input class="form-input" id="incidentCommander" placeholder="Name / role" />
+          </label>
+          <label class="form-label">Legal Contact
+            <input class="form-input" id="legalContact" placeholder="Legal counsel / privacy lead" />
+          </label>
+          <label class="form-label">Security Contact
+            <input class="form-input" id="securityContact" placeholder="Security lead / MSSP" />
+          </label>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <header class="section-header-with-actions">
+          <div>
+            <h2>Incident Register</h2>
+            <p class="section-help">One row per incident/event. Add timeline and notification status inline.</p>
+          </div>
+          <button class="btn-primary" onclick="incidentTable.addRow()">+ Add Incident</button>
+        </header>
+        <div id="incidentTableContainer"></div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Notification Flags</h2>
+        <div class="flag-grid" id="flagGrid">
+          <div class="flag-card">
+            <div class="flag-title">Potential MHMDA Consumer Notice</div>
+            <div class="flag-value" id="mhmdFlagCount">0</div>
+            <div class="flag-help">Incidents with consumer health data impact</div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-title">Potential HIPAA Breach Notice</div>
+            <div class="flag-value" id="hipaaFlagCount">0</div>
+            <div class="flag-help">Incidents with PHI impact</div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-title">Regulator Escalation</div>
+            <div class="flag-value" id="regulatorFlagCount">0</div>
+            <div class="flag-help">Incidents marked severity Critical</div>
+          </div>
+          <div class="flag-card">
+            <div class="flag-title">Open Incidents</div>
+            <div class="flag-value" id="openIncidentCount">0</div>
+            <div class="flag-help">Status New / Investigating / Contained</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Regulatory Notification Checklist</h2>
+        <div class="checklist-grid">
+          <label class="check-item"><input type="checkbox" data-check="internal-escalation" /> Internal escalation completed</label>
+          <label class="check-item"><input type="checkbox" data-check="legal-review" /> Legal review completed</label>
+          <label class="check-item"><input type="checkbox" data-check="consumer-notice-template" /> Consumer notice template prepared</label>
+          <label class="check-item"><input type="checkbox" data-check="hipaa-60day-clock" /> HIPAA 60-day timeline reviewed</label>
+          <label class="check-item"><input type="checkbox" data-check="state-ag-review" /> WA AG notification requirement reviewed</label>
+          <label class="check-item"><input type="checkbox" data-check="forensics-preservation" /> Evidence/forensics preserved</label>
+        </div>
+      </section>
+
+      <section class="doc-section">
+        <h2>Post-Incident Notes</h2>
+        <textarea class="form-textarea" id="postIncidentNotes" rows="4" placeholder="Root cause, lessons learned, permanent controls, policy updates..."></textarea>
+      </section>
+
+      <footer class="doc-footer">
+        <div class="save-status">
+          <span id="saveStatus">Saved</span>
+          <span class="last-saved" id="lastSaved"></span>
+        </div>
+        <div class="doc-actions">
+          <button class="btn-secondary" onclick="window.print()">Print / PDF</button>
+          <button class="btn-primary" onclick="saveDocument()">Save Document</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script src="data-model.js"></script>
+  <script src="row-table-engine.js"></script>
+  <script>
+    const DOC_TYPE = 'incident-response-log';
+    let engagementId = null;
+    let documentId = null;
+    let incidentTable = null;
+    let autoSaveTimer = null;
+
+    const incidentColumns = [
+      { key: 'incident_id', header: 'ID', type: 'text', width: '90px', readonly: true, placeholder: 'Auto' },
+      { key: 'discovered_at', header: 'Discovered', type: 'date', width: '120px' },
+      { key: 'incident_type', header: 'Type', type: 'select', width: '140px', options: [
+        { value: 'unauthorized-access', label: 'Unauthorized Access' },
+        { value: 'data-leak', label: 'Data Leak' },
+        { value: 'ransomware', label: 'Ransomware' },
+        { value: 'phishing', label: 'Phishing' },
+        { value: 'misconfiguration', label: 'Misconfiguration' },
+        { value: 'third-party', label: 'Third-Party Incident' },
+        { value: 'other', label: 'Other' }
+      ] },
+      { key: 'summary', header: 'Summary', type: 'text', width: 'flex', required: true, placeholder: 'What happened?' },
+      { key: 'severity', header: 'Severity', type: 'select', width: '110px', options: [
+        { value: 'critical', label: 'Critical' },
+        { value: 'high', label: 'High' },
+        { value: 'medium', label: 'Medium' },
+        { value: 'low', label: 'Low' }
+      ] },
+      { key: 'data_impact', header: 'Data Impact', type: 'select', width: '130px', options: [
+        { value: 'consumer-health', label: 'Consumer Health' },
+        { value: 'phi', label: 'PHI' },
+        { value: 'both', label: 'Both' },
+        { value: 'none', label: 'None' },
+        { value: 'unknown', label: 'Unknown' }
+      ] },
+      { key: 'status', header: 'Status', type: 'select', width: '120px', options: [
+        { value: 'new', label: 'New' },
+        { value: 'investigating', label: 'Investigating' },
+        { value: 'contained', label: 'Contained' },
+        { value: 'resolved', label: 'Resolved' },
+        { value: 'closed', label: 'Closed' }
+      ] },
+      { key: 'notification_status', header: 'Notification', type: 'select', width: '130px', options: [
+        { value: 'pending-review', label: 'Pending Review' },
+        { value: 'required', label: 'Required' },
+        { value: 'not-required', label: 'Not Required' },
+        { value: 'completed', label: 'Completed' }
+      ] },
+      { key: 'owner', header: 'Owner', type: 'text', width: '120px', placeholder: 'Assignee' }
+    ];
+
+    async function init() {
+      const params = new URLSearchParams(window.location.search);
+      engagementId = params.get('engagement');
+      if (!engagementId) return window.location.href = 'engagement.html';
+
+      const engagement = await HealthDataDB.getEngagement(engagementId);
+      if (engagement) document.getElementById('engagementName').textContent = engagement.engagementName;
+
+      incidentTable = new RowTableEngine('incidentTableContainer', incidentColumns, { onChange: handleChange });
+
+      await loadOrCreate();
+      bindInputs();
+      updateFlags();
+    }
+
+    async function loadOrCreate() {
+      const docs = await HealthDataDB.getDocuments(engagementId, DOC_TYPE);
+      if (!docs.length) return;
+
+      documentId = docs[0].id;
+      const data = docs[0].data || {};
+      if (data.contacts) {
+        document.getElementById('incidentCommander').value = data.contacts.incidentCommander || '';
+        document.getElementById('legalContact').value = data.contacts.legalContact || '';
+        document.getElementById('securityContact').value = data.contacts.securityContact || '';
+      }
+      (data.incidents || []).forEach(r => incidentTable.addRow(r));
+      (data.regulatoryChecks || []).forEach(id => {
+        const cb = document.querySelector(`input[data-check="${id}"]`);
+        if (cb) cb.checked = true;
+      });
+      if (data.postIncidentNotes) document.getElementById('postIncidentNotes').value = data.postIncidentNotes;
+      if (data.lastSaved) document.getElementById('lastSaved').textContent = new Date(data.lastSaved).toLocaleString();
+    }
+
+    function bindInputs() {
+      ['incidentCommander', 'legalContact', 'securityContact', 'postIncidentNotes'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', scheduleSave);
+        el.addEventListener('change', scheduleSave);
+      });
+
+      document.querySelectorAll('input[data-check]').forEach(cb => cb.addEventListener('change', scheduleSave));
+    }
+
+    function handleChange() {
+      updateFlags();
+      scheduleSave();
+    }
+
+    function updateFlags() {
+      const rows = incidentTable.getData();
+      const mhmd = rows.filter(r => ['consumer-health', 'both'].includes(r.data_impact)).length;
+      const hipaa = rows.filter(r => ['phi', 'both'].includes(r.data_impact)).length;
+      const regulator = rows.filter(r => r.severity === 'critical').length;
+      const open = rows.filter(r => ['new', 'investigating', 'contained'].includes(r.status)).length;
+
+      document.getElementById('mhmdFlagCount').textContent = mhmd;
+      document.getElementById('hipaaFlagCount').textContent = hipaa;
+      document.getElementById('regulatorFlagCount').textContent = regulator;
+      document.getElementById('openIncidentCount').textContent = open;
+    }
+
+    function scheduleSave() {
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(saveDocumentState, 1200);
+    }
+
+    async function saveDocumentState() {
+      document.getElementById('saveStatus').textContent = 'Saving...';
+      const regulatoryChecks = Array.from(document.querySelectorAll('input[data-check]:checked')).map(cb => cb.dataset.check);
+      const data = {
+        contacts: {
+          incidentCommander: document.getElementById('incidentCommander').value,
+          legalContact: document.getElementById('legalContact').value,
+          securityContact: document.getElementById('securityContact').value
+        },
+        incidents: incidentTable.getData(),
+        regulatoryChecks,
+        postIncidentNotes: document.getElementById('postIncidentNotes').value,
+        lastSaved: new Date().toISOString()
+      };
+
+      if (documentId) await HealthDataDB.updateDocument(documentId, data);
+      else documentId = await HealthDataDB.createDocument(engagementId, DOC_TYPE, 'Incident Response Log', data);
+
+      document.getElementById('saveStatus').textContent = 'Saved';
+      document.getElementById('lastSaved').textContent = new Date().toLocaleString();
+    }
+
+    function saveDocument() { saveDocumentState(); }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+
+  <style>
+    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .form-label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; color: #495057; }
+    .form-input { padding: 0.6rem; border: 1px solid #ced4da; border-radius: 6px; }
+    .flag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .flag-card { background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 1rem; }
+    .flag-title { font-size: 0.72rem; text-transform: uppercase; color: #6c757d; }
+    .flag-value { font-size: 1.6rem; font-weight: 700; color: #495057; margin: 0.2rem 0; }
+    .flag-help { font-size: 0.78rem; color: #6c757d; }
+    .checklist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .check-item { display: flex; gap: 0.5rem; align-items: center; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 0.7rem; font-size: 0.85rem; }
+    @media (max-width: 768px) {
+      .form-grid, .flag-grid, .checklist-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</body>
+</html>

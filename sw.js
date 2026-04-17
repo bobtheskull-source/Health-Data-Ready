@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hdr-cache-v7';
+const CACHE_NAME = 'hdr-cache-v9';
 const STATIC_ASSETS = [
   '/Health-Data-Ready/',
   '/Health-Data-Ready/index.html',
@@ -13,6 +13,8 @@ const STATIC_ASSETS = [
   '/Health-Data-Ready/doc-remediation.html',
   '/Health-Data-Ready/doc-hipaa-attestation.html',
   '/Health-Data-Ready/doc-data-inventory.html',
+  '/Health-Data-Ready/doc-incident-response.html',
+  '/Health-Data-Ready/doc-staff-awareness.html',
   '/Health-Data-Ready/row-table-styles.css',
   '/Health-Data-Ready/data-model.js',
   '/Health-Data-Ready/row-table-engine.js'
