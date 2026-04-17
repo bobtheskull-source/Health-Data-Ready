@@ -1,0 +1,35 @@
+[
+  {
+    "market_id": "mkt-election-2028",
+    "event_id": "evt-pres-2028",
+    "timestamp": "2025-04-01T12:00:00Z",
+    "implied_prob": 0.47,
+    "volume": 1200.0,
+    "spread": 0.03,
+    "depth": 650.0,
+    "source": "seed",
+    "freshness_seconds": 0
+  },
+  {
+    "market_id": "mkt-election-2028",
+    "event_id": "evt-pres-2028",
+    "timestamp": "2025-10-01T12:00:00Z",
+    "implied_prob": 0.53,
+    "volume": 1800.0,
+    "spread": 0.025,
+    "depth": 900.0,
+    "source": "seed",
+    "freshness_seconds": 0
+  },
+  {
+    "market_id": "mkt-fed-cut-june",
+    "event_id": "evt-fed-june",
+    "timestamp": "2025-11-15T08:00:00Z",
+    "implied_prob": 0.36,
+    "volume": 900.0,
+    "spread": 0.04,
+    "depth": 420.0,
+    "source": "seed",
+    "freshness_seconds": 0
+  }
+]
